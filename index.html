@@ -3,210 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEBLEN Task Tracker</title>
+    <title>VEBLEN Task & Time Tracker</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🚀</text></svg>">
 </head>
 <body>
+    <div class="header">
+        <div class="container">
+            <h1>🚀 VEBLEN Task & Time Tracker</h1>
+        </div>
+    </div>
+
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <h1>🚀 VEBLEN</h1>
-                <span>Unified Task & Time Tracker</span>
-            </div>
-            <div class="header-info">
-                <div class="live-indicator">
-                    <span class="dot"></span>
-                    Live
-                </div>
-                <div class="current-time" id="currentTime"></div>
-            </div>
-        </header>
-
         <!-- Employee Selection -->
-        <section class="employee-section">
+        <div class="employee-section">
+            <label for="employeeSelect">Select Employee:</label>
+            <select id="employeeSelect">
+                <option value="">-- Select Employee --</option>
+                <option value="Tony Herrera">Tony Herrera</option>
+                <option value="Alex">Alex</option>
+                <option value="Eden">Eden</option>
+                <option value="Social Media Manager">Social Media Manager</option>
+                <option value="Zac Macanally">Zac Macanally</option>
+                <option value="Ridho">Ridho</option>
+                <option value="Jevahn">Jevahn</option>
+                <option value="Risna">Risna</option>
+                <option value="Pran Setiawan">Pran Setiawan</option>
+                <option value="Wayan Arfian (Konsep Kreatif)">Wayan Arfian (Konsep Kreatif)</option>
+                <option value="Hanif (Konsep Kreatif)">Hanif (Konsep Kreatif)</option>
+            </select>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('time-tracker')">⏱️ Time Tracker</button>
+            <button class="tab-button" onclick="switchTab('time-clock')">🕐 Time Clock</button>
+            <button class="tab-button" onclick="switchTab('tasks')">📋 Tasks</button>
+            <button class="tab-button" onclick="switchTab('daily-report')">📊 Daily Report</button>
+            <button class="tab-button" onclick="switchTab('summary')">📈 Summary</button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div id="time-tracker" class="tab-content active">
             <div class="card">
-                <h3>👤 Select Employee</h3>
-                <select id="employeeSelect" onchange="loadEmployeeData()">
-                    <option value="">Choose Your Name</option>
-                    <option value="Tony Herrera">Tony Herrera</option>
-                    <option value="Alex">Alex</option>
-                    <option value="Ridho">Ridho</option>
-                    <option value="Jevahn">Jevahn</option>
-                    <option value="Risna">Risna</option>
-                    <option value="Pran Setiawan">Pran Setiawan</option>
-                    <option value="Wayan Arfian (Konsep Kreatif)">Wayan Arfian (Konsep Kreatif)</option>
-                    <option value="Hanif (Konsep Kreatif)">Hanif (Konsep Kreatif)</option>
-                    <option value="Eden">Eden</option>
-                    <option value="Social Media Manager">Social Media Manager</option>
-                    <option value="Zac Macanally">Zac Macanally</option>
-                </select>
-            </div>
-        </section>
+                <h2>Time Tracker</h2>
+                
+                <!-- Timer Display -->
+                <div class="timer-display">
+                    <h2 id="timerDisplay">00:00:00</h2>
+                    <p id="currentTaskName">No active task</p>
+                </div>
 
-        <!-- Quick Actions -->
-        <section class="quick-actions">
-            <div class="card">
-                <h3>⚡ Quick Actions</h3>
-                <div class="action-grid">
-                    <button class="action-btn new-task" onclick="toggleNewTaskForm()">
-                        <span class="icon">➕</span>
-                        <span>New Task</span>
-                    </button>
-                    <a href="https://your-n8n-instance.com/form/timelogger" class="action-btn time-clock" target="_blank">
-                        <span class="icon">🕰️</span>
-                        <span>Time Clock</span>
-                    </a>
-                    <a href="https://your-n8n-instance.com/form/reportlogger" class="action-btn daily-report" target="_blank">
-                        <span class="icon">📋</span>
-                        <span>Daily Report</span>
-                    </a>
-                    <button class="action-btn refresh" onclick="loadEmployeeData()">
-                        <span class="icon">🔄</span>
-                        <span>Refresh</span>
-                    </button>
-                </div>
-            </div>
-        </section>
+                <!-- Task Controls -->
+                <div id="taskControls">
+                    <!-- Start New Task Form -->
+                    <div id="newTaskForm" class="form-group">
+                        <h3>Start New Task</h3>
+                        <div class="form-group">
+                            <label for="taskName">Task Name:</label>
+                            <input type="text" id="taskName" placeholder="Enter task description">
+                        </div>
+                        <div class="form-group">
+                            <label for="taskCompany">Company:</label>
+                            <select id="taskCompany">
+                                <option value="">-- Select Company --</option>
+                                <option value="VEBLEN (Internal)">VEBLEN (Internal)</option>
+                                <option value="LCMB GROUP">LCMB GROUP</option>
+                                <option value="NEWTECH TRAILERS">NEWTECH TRAILERS</option>
+                                <option value="CROWN REALITY">CROWN REALITY</option>
+                                <option value="FLECK GROUP">FLECK GROUP</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskType">Task Type:</label>
+                            <select id="taskType">
+                                <option value="">-- Select Type --</option>
+                                <option value="🎬 Video Editing">🎬 Video Editing</option>
+                                <option value="✍️ Content Creation">✍️ Content Creation</option>
+                                <option value="🤝 Client Meeting">🤝 Client Meeting</option>
+                                <option value="🔍 Research">🔍 Research</option>
+                                <option value="🎨 Design">🎨 Design</option>
+                                <option value="💻 Development">💻 Development</option>
+                                <option value="📱 Social Media">📱 Social Media</option>
+                                <option value="📝 Copywriting">📝 Copywriting</option>
+                                <option value="⚙️ Admin">⚙️ Admin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskDescription">Description (Optional):</label>
+                            <textarea id="taskDescription" rows="3" placeholder="Additional details..."></textarea>
+                        </div>
+                        <button class="btn btn-success" onclick="startTask()">
+                            ▶️ Start Task
+                        </button>
+                    </div>
 
-        <!-- Active Task Display -->
-        <section id="activeTaskSection" class="active-task-section hidden">
-            <div class="card active-task">
-                <div class="task-header">
-                    <h3>🟢 Currently Working</h3>
-                    <div class="task-status" id="taskStatus">Active</div>
-                </div>
-                <div class="task-info">
-                    <div id="currentTaskName" class="task-name"></div>
-                    <div id="taskDetails" class="task-details"></div>
-                </div>
-                <div id="timer" class="timer">00:00:00</div>
-                <div class="task-actions">
-                    <button class="btn btn-pause" onclick="pauseTask()">
-                        ⏸️ Take Break
-                    </button>
-                    <button class="btn btn-complete" onclick="completeTask()">
-                        ✅ Complete Task
-                    </button>
-                </div>
-            </div>
-        </section>
+                    <!-- Active Task Controls -->
+                    <div id="activeTaskControls" class="hidden">
+                        <button class="btn btn-warning" onclick="pauseTask()">
+                            ⏸️ Pause Task
+                        </button>
+                        <button class="btn btn-danger" onclick="completeTask()">
+                            ✅ Complete Task
+                        </button>
+                    </div>
 
-        <!-- New Task Creation -->
-        <section id="newTaskSection" class="new-task-section hidden">
-            <div class="card">
-                <h3>🆕 Start New Task</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="taskName">What are you working on?</label>
-                        <input type="text" id="taskName" placeholder="e.g., Edit LCMB promotional video">
+                    <!-- Paused Task Controls -->
+                    <div id="pausedTaskControls" class="hidden">
+                        <button class="btn btn-success" onclick="resumeTask()">
+                            ▶️ Resume Task
+                        </button>
+                        <button class="btn btn-danger" onclick="completeTask()">
+                            ✅ Complete Task
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="company">Company/Client</label>
-                        <select id="company">
-                            <option value="">Select Company</option>
-                            <option value="VEBLEN (Internal)">VEBLEN Internal</option>
-                            <option value="LCMB GROUP">LCMB GROUP</option>
-                            <option value="NEWTECH TRAILERS">NEWTECH TRAILERS</option>
-                            <option value="CROWN REALITY">CROWN REALITY</option>
-                            <option value="FLECK GROUP">FLECK GROUP</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="taskType">Task Type</label>
-                        <select id="taskType">
-                            <option value="">Select Task Type</option>
-                            <option value="Video Editing">🎬 Video Editing</option>
-                            <option value="Content Creation">✍️ Content Creation</option>
-                            <option value="Client Meeting">🤝 Client Meeting</option>
-                            <option value="Research">🔍 Research</option>
-                            <option value="Design">🎨 Design</option>
-                            <option value="Development">💻 Development</option>
-                            <option value="Social Media">📱 Social Media</option>
-                            <option value="Copywriting">📝 Copywriting</option>
-                            <option value="Admin">⚙️ Admin</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="taskDescription">Description (optional)</label>
-                        <textarea id="taskDescription" placeholder="Provide detailed task description"></textarea>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-cancel" onclick="toggleNewTaskForm()">
-                        Cancel
-                    </button>
-                    <button class="btn btn-start" onclick="startNewTask()">
-                        🚀 Start Working
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Assigned Tasks from Intake System -->
-        <section id="assignedTasksSection" class="assigned-tasks-section">
-            <div class="card">
-                <h3>📋 My Assigned Tasks</h3>
-                <div id="assignedTasksList" class="tasks-list">
-                    <p class="empty-state">Select an employee to see assigned tasks</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Today's Progress -->
-        <section class="progress-section">
-            <div class="card">
-                <h3>📊 Today's Progress</h3>
-                <div id="todaySummary" class="progress-content">
-                    <div class="progress-item">
-                        <div class="progress-value">0.0</div>
-                        <div class="progress-label">Hours Today</div>
-                    </div>
-                    <div class="progress-item">
-                        <div class="progress-value">0</div>
-                        <div class="progress-label">Tasks Completed</div>
-                    </div>
-                    <div class="progress-item">
-                        <div class="progress-value">0</div>
-                        <div class="progress-label">Companies</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Status Update Modal -->
-        <div id="statusModal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>🔄 Update Task Status</h3>
-                    <button class="close-btn" onclick="closeStatusModal()">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="statusTaskInfo" class="task-info-display">
-                        <p><strong>Task:</strong> <span id="statusTaskName"></span></p>
-                        <p><strong>Company:</strong> <span id="statusTaskCompany"></span></p>
-                        <p><strong>Current Status:</strong> <span id="statusCurrentStatus"></span></p>
-                    </div>
-                    <div id="statusOptions" class="status-options">
-                        <!-- Status options will be populated dynamically -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-cancel" onclick="closeStatusModal()">Cancel</button>
-                    <button class="btn btn-primary" onclick="updateTaskStatus()">Update Status</button>
                 </div>
             </div>
         </div>
 
-        <!-- Loading Overlay -->
-        <div id="loadingOverlay" class="loading-overlay hidden">
-            <div class="spinner"></div>
-            <p>Processing...</p>
+        <div id="time-clock" class="tab-content">
+            <div class="card">
+                <h2>Time Clock</h2>
+                <p class="text-muted mb-3">Log your work hours for the day</p>
+                
+                <div class="time-clock-actions">
+                    <button class="clock-btn start" onclick="timeClock('🟢 START WORK')">
+                        <span class="emoji">🟢</span>
+                        <span>START WORK</span>
+                    </button>
+                    <button class="clock-btn break" onclick="timeClock('☕ TAKE BREAK')">
+                        <span class="emoji">☕</span>
+                        <span>TAKE BREAK</span>
+                    </button>
+                    <button class="clock-btn back" onclick="timeClock('🔵 BACK TO WORK')">
+                        <span class="emoji">🔵</span>
+                        <span>BACK TO WORK</span>
+                    </button>
+                    <button class="clock-btn done" onclick="timeClock('🔴 DONE FOR TODAY')">
+                        <span class="emoji">🔴</span>
+                        <span>DONE FOR TODAY</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- Notifications -->
-        <div id="notifications" class="notifications"></div>
+        <div id="tasks" class="tab-content">
+            <div class="card">
+                <h2>Assigned Tasks</h2>
+                <button class="btn btn-primary mb-3" onclick="loadAssignedTasks()">
+                    🔄 Refresh Tasks
+                </button>
+                <div id="assignedTasksList">
+                    <p class="text-muted">Select an employee and click refresh to load tasks</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="daily-report" class="tab-content">
+            <div class="card">
+                <h2>Daily Report</h2>
+                <form id="dailyReportForm">
+                    <div class="form-group">
+                        <label for="reportDate">Date:</label>
+                        <input type="date" id="reportDate" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="workSummary">Work Summary:</label>
+                        <textarea id="workSummary" rows="4" placeholder="What did you accomplish today?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="challenges">Challenges Faced:</label>
+                        <textarea id="challenges" rows="3" placeholder="Any issues or blockers?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="tomorrowPlan">Tomorrow's Plan:</label>
+                        <textarea id="tomorrowPlan" rows="3" placeholder="What will you work on tomorrow?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="workHours">Hours Worked:</label>
+                        <input type="number" id="workHours" step="0.5" placeholder="8.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="additionalNotes">Additional Notes:</label>
+                        <textarea id="additionalNotes" rows="3" placeholder="Any other comments?"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="submitDailyReport()">
+                        📤 Submit Report
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="summary" class="tab-content">
+            <div class="card">
+                <h2>Today's Summary</h2>
+                <button class="btn btn-primary mb-3" onclick="loadTodaySummary()">
+                    📊 Load Summary
+                </button>
+                <div id="summaryContent">
+                    <p class="text-muted">Click to load today's work summary</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messageContainer"></div>
     </div>
 
     <script src="script.js"></script>
