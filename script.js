@@ -1,226 +1,424 @@
-// VEBLEN Task & Time Tracker Frontend JavaScript
-
-// Configuration - UPDATE THESE WITH YOUR ACTUAL WEBHOOK URLS
+// Configuration
 const CONFIG = {
-    n8nWebhookUrl: 'https://your-n8n-domain.com/webhook/veblen-task-action',
-    sheetsApiUrl: 'https://your-n8n-domain.com/webhook/veblen-sheets-api'
+    n8nWebhookUrl: '/api/task-action',
+    sheetsApiUrl: '/api/sheets',
+    imgbbApiKey: 'YOUR_IMGBB_API_KEY' // Replace with your actual ImgBB API key
 };
 
-// Global state
+// State Management
 let currentEmployee = null;
 let activeTask = null;
 let timerInterval = null;
-let timerSeconds = 0;
+let elapsedSeconds = 0;
+let workSessions = []; // Track work sessions
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+function initializeApp() {
     // Load saved employee
-    const savedEmployee = localStorage.getItem('veblen_employee');
+    const savedEmployee = localStorage.getItem('selectedEmployee');
     if (savedEmployee) {
         document.getElementById('employeeSelect').value = savedEmployee;
         currentEmployee = savedEmployee;
+        loadEmployeeData();
     }
 
-    // Set today's date for report
-    document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
+    // Set up event listeners
+    document.getElementById('employeeSelect').addEventListener('change', handleEmployeeChange);
+    document.getElementById('newTaskForm').addEventListener('submit', handleStartTask);
+    document.getElementById('pauseTaskBtn').addEventListener('click', handlePauseTask);
+    document.getElementById('completeTaskBtn').addEventListener('click', handleCompleteTask);
+    document.getElementById('refreshTasksBtn').addEventListener('click', loadAssignedTasks);
+    document.getElementById('dailyReportForm').addEventListener('submit', handleDailyReport);
+    document.getElementById('statusUpdateForm').addEventListener('submit', handleStatusUpdate);
+    document.getElementById('refreshSummaryBtn').addEventListener('click', loadTodaySummary);
+    
+    // Time clock buttons
+    document.getElementById('startWorkBtn').addEventListener('click', () => handleTimeClock('🟢 START WORK'));
+    document.getElementById('breakBtn').addEventListener('click', () => handleTimeClock('☕ BREAK'));
+    document.getElementById('backToWorkBtn').addEventListener('click', () => handleTimeClock('🔵 BACK TO WORK'));
+    document.getElementById('endWorkBtn').addEventListener('click', () => handleTimeClock('🔴 END WORK'));
+
+    // Image upload
+    document.getElementById('taskImage').addEventListener('change', handleImagePreview);
 
     // Check for crashed session
-    checkCrashedSession();
+    checkForCrashedSession();
+}
 
-    // Start auto-save
-    startAutoSave();
-});
-
-// Employee selection handler
-document.getElementById('employeeSelect').addEventListener('change', function(e) {
+// Handle employee selection
+function handleEmployeeChange(e) {
     currentEmployee = e.target.value;
-    localStorage.setItem('veblen_employee', currentEmployee);
+    localStorage.setItem('selectedEmployee', currentEmployee);
     
     if (currentEmployee) {
-        showMessage('Employee selected: ' + currentEmployee, 'success');
-        checkActiveTask();
+        loadEmployeeData();
+    } else {
+        clearEmployeeData();
     }
-});
-
-// Tab switching
-function switchTab(tabId) {
-    // Hide all tabs
-    document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Remove active class from all buttons
-    document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected tab
-    document.getElementById(tabId).classList.add('active');
-    
-    // Add active class to clicked button
-    event.target.classList.add('active');
 }
 
-// Message display
-function showMessage(message, type = 'info') {
-    const container = document.getElementById('messageContainer');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${type}`;
-    messageDiv.textContent = message;
+// Load employee-specific data
+async function loadEmployeeData() {
+    if (!currentEmployee) return;
     
-    container.appendChild(messageDiv);
+    // Check for active task
+    await checkActiveTask();
     
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        messageDiv.remove();
-    }, 5000);
+    // Load assigned tasks
+    await loadAssignedTasks();
+    
+    // Load today's summary
+    await loadTodaySummary();
 }
 
-// API call wrapper
-async function apiCall(action, data = {}) {
-    if (!currentEmployee && action !== 'get_employee_settings') {
-        showMessage('Please select an employee first', 'error');
-        return null;
+// Clear employee data
+function clearEmployeeData() {
+    document.getElementById('activeTaskDisplay').style.display = 'none';
+    document.getElementById('assignedTasksList').innerHTML = '<p class="loading">Select an employee to view assigned tasks...</p>';
+    document.getElementById('todaySummary').innerHTML = '<p class="loading">Select an employee to view summary...</p>';
+}
+
+// Check for active task
+async function checkActiveTask() {
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'get_active_task',
+                employee: currentEmployee
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success && data.data.active_task) {
+            activeTask = data.data.active_task;
+            workSessions = parseWorkSessions(activeTask.description || '');
+            showActiveTask();
+            startTimer();
+        } else {
+            hideActiveTask();
+        }
+    } catch (error) {
+        console.error('Error checking active task:', error);
+        showToast('Error checking active task', 'error');
+    }
+}
+
+// Parse work sessions from description
+function parseWorkSessions(description) {
+    const sessions = [];
+    const lines = description.split('\n');
+    
+    lines.forEach(line => {
+        if (line.includes('Time worked:')) {
+            const dateMatch = line.match(/\[(\d{4}-\d{2}-\d{2})\]/);
+            const date = dateMatch ? dateMatch[1] : new Date().toISOString().split('T')[0];
+            
+            const timeRanges = line.match(/\d{2}:\d{2}/g);
+            if (timeRanges) {
+                for (let i = 0; i < timeRanges.length; i += 2) {
+                    if (timeRanges[i + 1]) {
+                        sessions.push({
+                            date: date,
+                            start: timeRanges[i],
+                            end: timeRanges[i + 1]
+                        });
+                    }
+                }
+            }
+        }
+    });
+    
+    return sessions;
+}
+
+// Format work sessions for description
+function formatWorkSessions() {
+    const sessionsByDate = {};
+    
+    workSessions.forEach(session => {
+        if (!sessionsByDate[session.date]) {
+            sessionsByDate[session.date] = [];
+        }
+        sessionsByDate[session.date].push(`${session.start} to ${session.end}`);
+    });
+    
+    let description = activeTask.original_description || '';
+    
+    Object.entries(sessionsByDate).forEach(([date, times]) => {
+        const sessionLine = `\n[${date}] Time worked: ${times.join(', ')}`;
+        
+        // Check if this date already exists in description
+        const datePattern = new RegExp(`\\[${date}\\] Time worked:.*`, 'g');
+        if (description.match(datePattern)) {
+            description = description.replace(datePattern, sessionLine.trim());
+        } else {
+            description += sessionLine;
+        }
+    });
+    
+    return description.trim();
+}
+
+// Handle start task
+async function handleStartTask(e) {
+    e.preventDefault();
+    
+    if (!currentEmployee) {
+        showToast('Please select an employee first', 'warning');
+        return;
+    }
+    
+    const formData = {
+        action: 'start_task',
+        employee: currentEmployee,
+        task_name: document.getElementById('taskName').value,
+        company: document.getElementById('company').value,
+        task_type: document.getElementById('taskType').value,
+        description: document.getElementById('description').value,
+        timestamp: new Date().toISOString()
+    };
+
+    // Handle image upload if present
+    const imageFile = document.getElementById('taskImage').files[0];
+    if (imageFile) {
+        const imageUrl = await uploadToImgBB(imageFile);
+        if (imageUrl) {
+            formData.description += `\n\nAttached image: ${imageUrl}`;
+        }
     }
 
     try {
         const response = await fetch(CONFIG.n8nWebhookUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            activeTask = {
+                task_id: data.data.task_id,
+                task_name: formData.task_name,
+                company: formData.company,
+                task_type: formData.task_type,
+                original_description: formData.description,
+                start_time: formData.timestamp,
+                elapsed_seconds: 0
+            };
+            
+            // Initialize first work session
+            const now = new Date();
+            workSessions = [{
+                date: now.toISOString().split('T')[0],
+                start: now.toTimeString().slice(0, 5),
+                end: null
+            }];
+            
+            document.getElementById('newTaskForm').reset();
+            document.getElementById('imagePreview').innerHTML = '';
+            showActiveTask();
+            startTimer();
+            showToast('Task started successfully!', 'success');
+        } else {
+            showToast('Failed to start task', 'error');
+        }
+    } catch (error) {
+        console.error('Error starting task:', error);
+        showToast('Error starting task', 'error');
+    }
+}
+
+// Handle pause task
+async function handlePauseTask() {
+    if (!activeTask) return;
+    
+    // Update current session end time
+    const now = new Date();
+    if (workSessions.length > 0 && !workSessions[workSessions.length - 1].end) {
+        workSessions[workSessions.length - 1].end = now.toTimeString().slice(0, 5);
+    }
+    
+    const updatedDescription = formatWorkSessions();
+    
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                action: action,
+                action: 'pause_task',
                 employee: currentEmployee,
-                timestamp: new Date().toISOString(),
-                ...data
+                task_id: activeTask.task_id,
+                description: updatedDescription,
+                elapsed_seconds: elapsedSeconds,
+                timestamp: new Date().toISOString()
             })
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
+        const data = await response.json();
         
-        if (result.success) {
-            return result;
+        if (data.success) {
+            stopTimer();
+            hideActiveTask();
+            activeTask = null;
+            workSessions = [];
+            showToast('Task paused successfully!', 'success');
         } else {
-            throw new Error(result.message || 'Operation failed');
+            showToast('Failed to pause task', 'error');
         }
     } catch (error) {
-        console.error('API Error:', error);
-        showMessage('Error: ' + error.message, 'error');
-        return null;
+        console.error('Error pausing task:', error);
+        showToast('Error pausing task', 'error');
     }
 }
 
-// Time Tracker Functions
-async function startTask() {
-    const taskName = document.getElementById('taskName').value;
-    const company = document.getElementById('taskCompany').value;
-    const taskType = document.getElementById('taskType').value;
-    const description = document.getElementById('taskDescription').value;
-
-    if (!taskName || !company || !taskType) {
-        showMessage('Please fill in all required fields', 'error');
-        return;
-    }
-
-    const result = await apiCall('start_task', {
-        task_name: taskName,
-        company: company,
-        task_type: taskType,
-        description: description
-    });
-
-    if (result) {
-        activeTask = {
-            task_id: result.data.task_id,
-            task_name: taskName,
-            start_time: new Date().toISOString(),
-            status: 'active'
-        };
-        
-        // Save to localStorage
-        localStorage.setItem('veblen_active_task', JSON.stringify(activeTask));
-        
-        // Start timer
-        startTimer();
-        
-        // Update UI
-        updateTaskUI();
-        
-        showMessage('Task started successfully!', 'success');
-        
-        // Clear form
-        document.getElementById('taskName').value = '';
-        document.getElementById('taskDescription').value = '';
-    }
-}
-
-async function pauseTask() {
+// Handle complete task
+async function handleCompleteTask() {
     if (!activeTask) return;
+    
+    const completionNotes = prompt('Add completion notes (optional):');
+    
+    // Update current session end time
+    const now = new Date();
+    if (workSessions.length > 0 && !workSessions[workSessions.length - 1].end) {
+        workSessions[workSessions.length - 1].end = now.toTimeString().slice(0, 5);
+    }
+    
+    let finalDescription = formatWorkSessions();
+    if (completionNotes) {
+        finalDescription += `\n\nCompletion notes: ${completionNotes}`;
+    }
+    
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'complete_task',
+                employee: currentEmployee,
+                task_id: activeTask.task_id,
+                description: finalDescription,
+                elapsed_seconds: elapsedSeconds,
+                timestamp: new Date().toISOString()
+            })
+        });
 
-    const result = await apiCall('pause_task', {
-        task_id: activeTask.task_id,
-        pause_reason: 'Manual pause'
-    });
-
-    if (result) {
-        activeTask.status = 'paused';
-        stopTimer();
-        updateTaskUI();
-        showMessage('Task paused', 'warning');
+        const data = await response.json();
+        
+        if (data.success) {
+            stopTimer();
+            hideActiveTask();
+            activeTask = null;
+            workSessions = [];
+            showToast('Task completed successfully!', 'success');
+            loadAssignedTasks();
+            loadTodaySummary();
+        } else {
+            showToast('Failed to complete task', 'error');
+        }
+    } catch (error) {
+        console.error('Error completing task:', error);
+        showToast('Error completing task', 'error');
     }
 }
 
+// Resume task (when continuing work after break)
 async function resumeTask() {
     if (!activeTask) return;
-
-    const result = await apiCall('start_task', {
-        task_id: activeTask.task_id,
-        task_name: activeTask.task_name,
-        resume: true
-    });
-
-    if (result) {
-        activeTask.status = 'active';
-        startTimer();
-        updateTaskUI();
-        showMessage('Task resumed', 'success');
-    }
-}
-
-async function completeTask() {
-    if (!activeTask) return;
-
-    const notes = prompt('Add completion notes (optional):');
     
-    const result = await apiCall('complete_task', {
-        task_id: activeTask.task_id,
-        completion_notes: notes || ''
+    // Add new work session
+    const now = new Date();
+    workSessions.push({
+        date: now.toISOString().split('T')[0],
+        start: now.toTimeString().slice(0, 5),
+        end: null
     });
+    
+    startTimer();
+}
 
-    if (result) {
-        stopTimer();
-        activeTask = null;
-        localStorage.removeItem('veblen_active_task');
-        updateTaskUI();
-        showMessage('Task completed!', 'success');
+// Load assigned tasks
+async function loadAssignedTasks() {
+    if (!currentEmployee) {
+        document.getElementById('assignedTasksList').innerHTML = '<p class="loading">Select an employee to view assigned tasks...</p>';
+        return;
+    }
+    
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'get_assigned_tasks',
+                employee: currentEmployee
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success && data.data.tasks) {
+            displayAssignedTasks(data.data.tasks);
+        } else {
+            document.getElementById('assignedTasksList').innerHTML = '<p class="loading">No assigned tasks found.</p>';
+        }
+    } catch (error) {
+        console.error('Error loading assigned tasks:', error);
+        showToast('Error loading assigned tasks', 'error');
     }
 }
+
+// Display assigned tasks
+function displayAssignedTasks(tasks) {
+    const container = document.getElementById('assignedTasksList');
+    
+    if (tasks.length === 0) {
+        container.innerHTML = '<p class="loading">No assigned tasks found.</p>';
+        return;
+    }
+    
+    container.innerHTML = tasks.map(task => `
+        <div class="task-card">
+            <h4>${task.task_name}</h4>
+            <p><strong>Company:</strong> ${task.company}</p>
+            <p><strong>Status:</strong> ${task.current_status}</p>
+            <p><strong>Due Date:</strong> ${task.due_date || 'No due date'}</p>
+            ${task.description ? `<p><strong>Description:</strong> ${task.description}</p>` : ''}
+            <button class="btn btn-primary" onclick="startTaskFromAssigned('${task.intake_task_id}', '${task.task_name}', '${task.company}')">
+                Start Working
+            </button>
+        </div>
+    `).join('');
+}
+
+// Start task from assigned tasks
+window.startTaskFromAssigned = function(taskId, taskName, company) {
+    document.getElementById('taskName').value = taskName;
+    document.getElementById('company').value = company;
+    document.getElementById('taskType').focus();
+    
+    // Scroll to task form
+    document.querySelector('.time-tracker-section').scrollIntoView({ behavior: 'smooth' });
+};
 
 // Timer functions
 function startTimer() {
     if (timerInterval) return;
     
+    const startTime = Date.now() - (elapsedSeconds * 1000);
+    
     timerInterval = setInterval(() => {
-        timerSeconds++;
+        elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
         updateTimerDisplay();
         
-        // Save state every 10 seconds
-        if (timerSeconds % 10 === 0) {
+        // Auto-save every 10 seconds
+        if (elapsedSeconds % 10 === 0) {
             saveTimerState();
         }
     }, 1000);
@@ -234,261 +432,325 @@ function stopTimer() {
 }
 
 function updateTimerDisplay() {
-    const hours = Math.floor(timerSeconds / 3600);
-    const minutes = Math.floor((timerSeconds % 3600) / 60);
-    const seconds = timerSeconds % 60;
+    const hours = Math.floor(elapsedSeconds / 3600);
+    const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+    const seconds = elapsedSeconds % 60;
     
-    const display = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const display = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     document.getElementById('timerDisplay').textContent = display;
 }
 
-function updateTaskUI() {
-    const newTaskForm = document.getElementById('newTaskForm');
-    const activeControls = document.getElementById('activeTaskControls');
-    const pausedControls = document.getElementById('pausedTaskControls');
-    const taskNameDisplay = document.getElementById('currentTaskName');
+// Save timer state
+function saveTimerState() {
+    if (!activeTask) return;
     
-    if (!activeTask) {
-        newTaskForm.classList.remove('hidden');
-        activeControls.classList.add('hidden');
-        pausedControls.classList.add('hidden');
-        taskNameDisplay.textContent = 'No active task';
-        timerSeconds = 0;
-        updateTimerDisplay();
-    } else {
-        newTaskForm.classList.add('hidden');
-        taskNameDisplay.textContent = activeTask.task_name;
+    const timerState = {
+        activeTask: activeTask,
+        elapsedSeconds: elapsedSeconds,
+        workSessions: workSessions,
+        lastSaved: new Date().toISOString()
+    };
+    
+    localStorage.setItem('timerState', JSON.stringify(timerState));
+}
+
+// Check for crashed session
+async function checkForCrashedSession() {
+    const savedState = localStorage.getItem('timerState');
+    if (!savedState) return;
+    
+    try {
+        const state = JSON.parse(savedState);
+        const lastSaved = new Date(state.lastSaved);
+        const now = new Date();
+        const timeDiff = (now - lastSaved) / 1000; // seconds
         
-        if (activeTask.status === 'active') {
-            activeControls.classList.remove('hidden');
-            pausedControls.classList.add('hidden');
+        // If more than 30 seconds have passed, consider it a crash
+        if (timeDiff > 30) {
+            const recover = confirm('A previous session was detected. Would you like to recover it?');
+            
+            if (recover) {
+                activeTask = state.activeTask;
+                workSessions = state.workSessions || [];
+                elapsedSeconds = state.elapsedSeconds + Math.floor(timeDiff);
+                showActiveTask();
+                startTimer();
+                showToast('Session recovered successfully!', 'success');
+            } else {
+                localStorage.removeItem('timerState');
+            }
+        }
+    } catch (error) {
+        console.error('Error recovering session:', error);
+        localStorage.removeItem('timerState');
+    }
+}
+
+// Show/hide active task
+function showActiveTask() {
+    document.getElementById('activeTaskDisplay').style.display = 'block';
+    document.getElementById('startTaskForm').style.display = 'none';
+    
+    document.getElementById('currentTaskName').textContent = activeTask.task_name;
+    document.getElementById('currentCompany').textContent = activeTask.company;
+    document.getElementById('currentTaskType').textContent = activeTask.task_type;
+    
+    updateTimerDisplay();
+}
+
+function hideActiveTask() {
+    document.getElementById('activeTaskDisplay').style.display = 'none';
+    document.getElementById('startTaskForm').style.display = 'block';
+    localStorage.removeItem('timerState');
+}
+
+// Handle time clock
+async function handleTimeClock(action) {
+    if (!currentEmployee) {
+        showToast('Please select an employee first', 'warning');
+        return;
+    }
+    
+    // If going on break or ending work, pause active task
+    if ((action === '☕ BREAK' || action === '🔴 END WORK') && activeTask) {
+        await handlePauseTask();
+    }
+    
+    // If coming back from break, resume active task
+    if (action === '🔵 BACK TO WORK' && activeTask) {
+        await resumeTask();
+    }
+    
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'time_clock',
+                employee: currentEmployee,
+                clock_action: action,
+                timestamp: new Date().toISOString()
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast(`${action} recorded successfully!`, 'success');
+            updateTimeClockStatus(action);
         } else {
-            activeControls.classList.add('hidden');
-            pausedControls.classList.remove('hidden');
+            showToast('Failed to record time clock action', 'error');
         }
+    } catch (error) {
+        console.error('Error recording time clock:', error);
+        showToast('Error recording time clock action', 'error');
     }
 }
 
-// Time Clock Functions
-async function timeClock(action) {
-    const result = await apiCall('time_clock', {
-        clock_action: action
-    });
+function updateTimeClockStatus(action) {
+    const statusDiv = document.getElementById('timeClockStatus');
+    const time = new Date().toLocaleTimeString();
+    statusDiv.innerHTML = `Last action: ${action} at ${time}`;
+}
 
-    if (result) {
-        showMessage(`Time clock: ${action}`, 'success');
+// Handle daily report
+async function handleDailyReport(e) {
+    e.preventDefault();
+    
+    if (!currentEmployee) {
+        showToast('Please select an employee first', 'warning');
+        return;
     }
-}
-
-// Task Management
-async function loadAssignedTasks() {
-    const result = await apiCall('get_assigned_tasks');
     
-    if (result && result.tasks) {
-        const tasksList = document.getElementById('assignedTasksList');
-        
-        if (result.tasks.length === 0) {
-            tasksList.innerHTML = '<p class="text-muted">No assigned tasks found</p>';
-            return;
-        }
-        
-        tasksList.innerHTML = '<ul class="task-list">' + 
-            result.tasks.map(task => `
-                <li class="task-item">
-                    <div class="task-info">
-                        <h4>${task.task_name}</h4>
-                        <p>${task.company} • Due: ${new Date(task.due_date).toLocaleDateString()}</p>
-                    </div>
-                    <div class="task-meta">
-                        <span class="status-badge ${task.current_status.toLowerCase().replace(' ', '-')}">${task.current_status}</span>
-                        <button class="btn btn-primary" onclick="createTaskFromAssigned('${task.intake_task_id}', '${task.task_name}', '${task.company}')">
-                            ▶️ Start
-                        </button>
-                    </div>
-                </li>
-            `).join('') + 
-            '</ul>';
-    }
-}
-
-function createTaskFromAssigned(intakeId, taskName, company) {
-    // Pre-fill the form
-    document.getElementById('taskName').value = taskName;
-    document.getElementById('taskCompany').value = company;
-    
-    // Switch to time tracker tab
-    switchTab('time-tracker');
-    
-    // Focus on task type
-    document.getElementById('taskType').focus();
-}
-
-// Daily Report
-async function submitDailyReport() {
-    const reportData = {
-        date: document.getElementById('reportDate').value,
+    const formData = {
+        action: 'daily_report',
+        employee: currentEmployee,
+        date: new Date().toISOString().split('T')[0],
         work_summary: document.getElementById('workSummary').value,
         challenges: document.getElementById('challenges').value,
         tomorrow_plan: document.getElementById('tomorrowPlan').value,
-        work_hours: document.getElementById('workHours').value,
-        additional_notes: document.getElementById('additionalNotes').value
+        work_hours: parseFloat(document.getElementById('workHours').value),
+        additional_notes: document.getElementById('additionalNotes').value,
+        timestamp: new Date().toISOString()
     };
 
-    if (!reportData.work_summary || !reportData.work_hours) {
-        showMessage('Please fill in work summary and hours worked', 'error');
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('dailyReportForm').reset();
+            showToast('Daily report submitted successfully!', 'success');
+        } else {
+            showToast('Failed to submit daily report', 'error');
+        }
+    } catch (error) {
+        console.error('Error submitting daily report:', error);
+        showToast('Error submitting daily report', 'error');
+    }
+}
+
+// Handle status update
+async function handleStatusUpdate(e) {
+    e.preventDefault();
+    
+    if (!currentEmployee) {
+        showToast('Please select an employee first', 'warning');
         return;
     }
-
-    const result = await apiCall('daily_report', reportData);
-
-    if (result) {
-        showMessage('Daily report submitted successfully!', 'success');
-        
-        // Clear form
-        document.getElementById('workSummary').value = '';
-        document.getElementById('challenges').value = '';
-        document.getElementById('tomorrowPlan').value = '';
-        document.getElementById('workHours').value = '';
-        document.getElementById('additionalNotes').value = '';
-    }
-}
-
-// Summary
-async function loadTodaySummary() {
-    const result = await apiCall('today_summary');
     
-    if (result && result.summary) {
-        const summary = result.summary;
-        const summaryContent = document.getElementById('summaryContent');
-        
-        summaryContent.innerHTML = `
-            <div class="summary-stats">
-                <h3>📅 ${summary.date}</h3>
-                <div class="stat-row">
-                    <div class="stat">
-                        <h4>Total Time</h4>
-                        <p class="stat-value">${summary.total_time}</p>
-                    </div>
-                    <div class="stat">
-                        <h4>Tasks Worked</h4>
-                        <p class="stat-value">${summary.task_count}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-}
+    const taskSelect = document.getElementById('statusTaskSelect');
+    const selectedOption = taskSelect.options[taskSelect.selectedIndex];
+    
+    const formData = {
+        action: 'update_task_status',
+        employee: currentEmployee,
+        task_id: taskSelect.value,
+        master_id: selectedOption.dataset.masterId,
+        company_id: selectedOption.dataset.companyId,
+        new_status: document.getElementById('newStatus').value,
+        company: selectedOption.dataset.company,
+        timestamp: new Date().toISOString()
+    };
 
-// Auto-save and crash recovery
-function saveTimerState() {
-    if (activeTask && activeTask.status === 'active') {
-        const state = {
-            task: activeTask,
-            seconds: timerSeconds,
-            lastSave: new Date().toISOString()
-        };
-        localStorage.setItem('veblen_timer_state', JSON.stringify(state));
-    }
-}
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
 
-async function checkCrashedSession() {
-    const savedState = localStorage.getItem('veblen_timer_state');
-    if (savedState) {
-        const state = JSON.parse(savedState);
-        const lastSave = new Date(state.lastSave);
-        const now = new Date();
-        const minutesSinceLastSave = (now - lastSave) / 1000 / 60;
+        const data = await response.json();
         
-        // If last save was within 30 minutes, offer to recover
-        if (minutesSinceLastSave < 30) {
-            if (confirm('Found an active session. Would you like to recover it?')) {
-                activeTask = state.task;
-                timerSeconds = state.seconds;
-                
-                // Add time elapsed since last save
-                const elapsedSeconds = Math.floor((now - lastSave) / 1000);
-                timerSeconds += elapsedSeconds;
-                
-                updateTaskUI();
-                startTimer();
-                showMessage('Session recovered!', 'success');
-            } else {
-                localStorage.removeItem('veblen_timer_state');
-            }
+        if (data.success) {
+            document.getElementById('statusUpdateForm').reset();
+            showToast('Task status updated successfully!', 'success');
+            loadAssignedTasks();
         } else {
-            localStorage.removeItem('veblen_timer_state');
+            showToast('Failed to update task status', 'error');
         }
+    } catch (error) {
+        console.error('Error updating task status:', error);
+        showToast('Error updating task status', 'error');
     }
 }
 
-async function checkActiveTask() {
-    const result = await apiCall('get_active_task');
+// Load today's summary
+async function loadTodaySummary() {
+    if (!currentEmployee) {
+        document.getElementById('todaySummary').innerHTML = '<p class="loading">Select an employee to view summary...</p>';
+        return;
+    }
     
-    if (result && result.tasks && result.tasks.length > 0) {
-        const task = result.tasks[0];
-        activeTask = {
-            task_id: task.task_id,
-            task_name: task.task_name,
-            status: task.status,
-            start_time: task.start_time
-        };
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'today_summary',
+                employee: currentEmployee
+            })
+        });
+
+        const data = await response.json();
         
-        timerSeconds = task.total_seconds;
-        updateTaskUI();
-        
-        if (task.status === 'active') {
-            startTimer();
+        if (data.success && data.data) {
+            displayTodaySummary(data.data);
+        } else {
+            document.getElementById('todaySummary').innerHTML = '<p class="loading">No data available for today.</p>';
         }
+    } catch (error) {
+        console.error('Error loading summary:', error);
+        showToast('Error loading today\'s summary', 'error');
     }
 }
 
-function startAutoSave() {
-    // Save state before page unload
-    window.addEventListener('beforeunload', saveTimerState);
+function displayTodaySummary(summary) {
+    const container = document.getElementById('todaySummary');
     
-    // Auto-save every 5 minutes
-    setInterval(() => {
-        if (activeTask && activeTask.status === 'active') {
-            saveTimerState();
+    container.innerHTML = `
+        <div class="summary-stats">
+            <div class="stat-item">
+                <h4>Total Hours</h4>
+                <p class="stat-value">${summary.total_hours || 0}</p>
+            </div>
+            <div class="stat-item">
+                <h4>Tasks Completed</h4>
+                <p class="stat-value">${summary.tasks_completed || 0}</p>
+            </div>
+            <div class="stat-item">
+                <h4>Active Tasks</h4>
+                <p class="stat-value">${summary.active_tasks?.length || 0}</p>
+            </div>
+        </div>
+    `;
+}
+
+// Image handling
+async function handleImagePreview(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const preview = document.getElementById('imagePreview');
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        preview.innerHTML = `
+            <img src="${e.target.result}" style="max-width: 200px; max-height: 200px; margin-top: 10px;">
+            <p style="font-size: 0.875rem; color: var(--text-secondary);">Image will be uploaded when task starts</p>
+        `;
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+async function uploadToImgBB(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    try {
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${CONFIG.imgbbApiKey}`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            return data.data.display_url;
+        } else {
+            showToast('Failed to upload image', 'error');
+            return null;
         }
-    }, 5 * 60 * 1000);
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        showToast('Error uploading image', 'error');
+        return null;
+    }
 }
 
-// Add CSS for summary stats
-const style = document.createElement('style');
-style.textContent = `
-.summary-stats {
-    text-align: center;
+// Toast notification
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    
+    const container = document.getElementById('toastContainer');
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 5000);
 }
 
-.stat-row {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-top: 20px;
-}
-
-.stat {
-    background-color: var(--dark-bg);
-    padding: 20px 30px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-
-.stat h4 {
-    color: var(--muted-text);
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-
-.stat-value {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--primary-color);
-}
-
-.hidden {
-    display: none !important;
-}
-`;
-document.head.appendChild(style);
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (activeTask) {
+        saveTimerState();
+    }
+});
