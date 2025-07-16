@@ -10,8 +10,8 @@ let selectedTaskForStatus = null;
 // Configuration - UPDATE THESE URLs
 const CONFIG = {
     n8nWebhookUrl: 'https://your-n8n-instance.com/webhook/veblen-task-action',
-    timeLoggerUrl: 'https://your-n8n-instance.com/form/timelogger',
-    dailyReportUrl: 'https://your-n8n-instance.com/form/reportlogger'
+    // Google Sheets endpoints (handled by n8n)
+    sheetsApiUrl: 'https://your-n8n-instance.com/webhook/veblen-sheets-api'
 };
 
 // Status configuration with your exact IDs
@@ -90,6 +90,17 @@ document.addEventListener('DOMContentLoaded', function() {
         employeeSelect.value = savedEmployee;
         loadEmployeeData();
     }
+    
+    // Crash recovery - check for active tasks on page load
+    if (savedEmployee) {
+        recoverActiveTask();
+    }
+    
+    // Auto-save timer state every 10 seconds
+    setInterval(saveTimerState, 10000);
+    
+    // Save timer state before page unload
+    window.addEventListener('beforeunload', saveTimerState);
 });
 
 // Time display
@@ -102,6 +113,27 @@ function updateCurrentTime() {
         second: '2-digit'
     });
     document.getElementById('currentTime').textContent = timeString;
+    
+    // Update time clock modal if open
+    const timeClockDisplay = document.getElementById('timeClockDisplay');
+    if (timeClockDisplay) {
+        timeClockDisplay.textContent = now.toLocaleTimeString('en-US', { 
+            hour12: true,
+            hour: 'numeric',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+    
+    const timeClockDate = document.getElementById('timeClockDate');
+    if (timeClockDate) {
+        timeClockDate.textContent = now.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
 }
 
 // Employee selection handler
@@ -646,9 +678,115 @@ setInterval(() => {
     }
 }, 5 * 60 * 1000); // 5 minutes
 
+// Crash recovery functions
+function saveTimerState() {
+    if (currentTaskId && currentEmployee && startTime) {
+        const timerState = {
+            employee: currentEmployee,
+            taskId: currentTaskId,
+            taskData: activeTaskData,
+            startTime: startTime,
+            pausedTime: pausedTime,
+            isRunning: currentTimer !== null,
+            lastSaved: Date.now()
+        };
+        localStorage.setItem('veblen_timer_state', JSON.stringify(timerState));
+    } else {
+        // Clear saved state if no active task
+        localStorage.removeItem('veblen_timer_state');
+    }
+}
+
+function recoverActiveTask() {
+    const savedTimerState = localStorage.getItem('veblen_timer_state');
+    if (!savedTimerState) return;
+    
+    try {
+        const timerState = JSON.parse(savedTimerState);
+        const timeSinceLastSave = Date.now() - timerState.lastSaved;
+        
+        // Only recover if saved within last 10 minutes (crash recovery)
+        if (timeSinceLastSave < 10 * 60 * 1000 && timerState.employee === currentEmployee) {
+            console.log('🔄 Recovering active task from crash...');
+            
+            // Restore task data
+            currentTaskId = timerState.taskId;
+            activeTaskData = timerState.taskData;
+            
+            // Show task recovery notification
+            showNotification('⚡ Recovered active task from crash! Syncing with server...', 'info');
+            
+            // Verify with server and restore timer
+            makeApiCall('get_active_task', { employee: currentEmployee })
+                .then(data => {
+                    if (data.active_task && data.active_task.task_id === currentTaskId) {
+                        showActiveTask(data.active_task);
+                        
+                        if (data.active_task.status === 'active' && timerState.isRunning) {
+                            // Calculate time that should have elapsed
+                            const serverTime = (data.active_task.total_seconds || 0) * 1000;
+                            pausedTime = serverTime;
+                            startTimer();
+                            showNotification('✅ Task timer recovered and synced!', 'success');
+                        } else {
+                            showNotification('⏸️ Task recovered in paused state', 'info');
+                        }
+                    } else {
+                        // Task no longer active on server, clear local state
+                        localStorage.removeItem('veblen_timer_state');
+                        showNotification('ℹ️ Previous task was completed on another device', 'info');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error recovering task:', error);
+                    showNotification('⚠️ Could not verify task with server', 'warning');
+                });
+        } else {
+            // Clear old saved state
+            localStorage.removeItem('veblen_timer_state');
+        }
+    } catch (error) {
+        console.error('Error parsing saved timer state:', error);
+        localStorage.removeItem('veblen_timer_state');
+    }
+}
+
+// Enhanced timer functions with crash protection
+function startTimer() {
+    startTime = Date.now() - pausedTime;
+    currentTimer = setInterval(() => {
+        updateTimer();
+        // Save state every 10 timer updates (10 seconds)
+        if (Math.floor((Date.now() - startTime) / 1000) % 10 === 0) {
+            saveTimerState();
+        }
+    }, 1000);
+    saveTimerState();
+}
+
+function stopTimer() {
+    pauseTimer();
+    timer.textContent = '00:00:00';
+    pausedTime = 0;
+    startTime = null;
+    localStorage.removeItem('veblen_timer_state');
+}
+
 // Close modal when clicking outside
 document.getElementById('statusModal').addEventListener('click', function(event) {
     if (event.target === this) {
         closeStatusModal();
+    }
+});
+
+document.getElementById('timeClockModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeTimeClockModal();
+    }
+});
+
+document.getElementById('dailyReportModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeDailyReportModal();
     }
 });
