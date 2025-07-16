@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEBLEN Task Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1>🚀 VEBLEN</h1>
+                <span>Task Tracker</span>
+            </div>
+            <div class="header-info">
+                <div class="live-indicator">
+                    <span class="dot"></span>
+                    Live
+                </div>
+            </div>
+        </header>
+
+        <!-- Employee Selection -->
+        <section class="employee-section">
+            <div class="card">
+                <h3>👤 Select Employee</h3>
+                <select id="employeeSelect" onchange="loadEmployeeData()">
+                    <option value="">Choose Your Name</option>
+                    <option value="Tony Herrera">Tony Herrera</option>
+                    <option value="Alex">Alex</option>
+                    <option value="Ridho">Ridho</option>
+                    <option value="Jevahn">Jevahn</option>
+                    <option value="Risna">Risna</option>
+                    <option value="Pran Setiawan">Pran Setiawan</option>
+                    <option value="Wayan Arfian (Konsep Kreatif)">Wayan Arfian (Konsep Kreatif)</option>
+                    <option value="Hanif (Konsep Kreatif)">Hanif (Konsep Kreatif)</option>
+                    <option value="Eden">Eden</option>
+                    <option value="Social Media Manager">Social Media Manager</option>
+                    <option value="Zac Macanally">Zac Macanally</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Active Task Display -->
+        <section id="activeTaskSection" class="active-task-section hidden">
+            <div class="card active-task">
+                <div class="task-header">
+                    <h3>🟢 Currently Working</h3>
+                    <div class="task-status" id="taskStatus">Active</div>
+                </div>
+                <div class="task-info">
+                    <div id="currentTaskName" class="task-name"></div>
+                    <div id="taskDetails" class="task-details"></div>
+                </div>
+                <div id="timer" class="timer">00:00:00</div>
+                <div class="task-actions">
+                    <button class="btn btn-pause" onclick="pauseTask()">
+                        ⏸️ Take Break
+                    </button>
+                    <button class="btn btn-complete" onclick="completeTask()">
+                        ✅ Complete Task
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Task Creation -->
+        <section class="new-task-section">
+            <div class="card">
+                <h3>🆕 Start New Task</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="taskName">What are you working on?</label>
+                        <input type="text" id="taskName" placeholder="e.g., Edit LCMB promotional video">
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Company/Client</label>
+                        <select id="company">
+                            <option value="">Select Company</option>
+                            <option value="LCMB GROUP">LCMB GROUP</option>
+                            <option value="NEWTECH TRAILERS">NEWTECH TRAILERS</option>
+                            <option value="CROWN REALITY">CROWN REALITY</option>
+                            <option value="VEBLEN Internal">VEBLEN Internal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskType">Task Type</label>
+                        <select id="taskType">
+                            <option value="">Select Task Type</option>
+                            <option value="Video Editing">🎬 Video Editing</option>
+                            <option value="Content Creation">✍️ Content Creation</option>
+                            <option value="Client Meeting">🤝 Client Meeting</option>
+                            <option value="Research">🔍 Research</option>
+                            <option value="Design">🎨 Design</option>
+                            <option value="Development">💻 Development</option>
+                            <option value="Social Media">📱 Social Media</option>
+                            <option value="Copywriting">📝 Copywriting</option>
+                            <option value="Admin">⚙️ Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-start" onclick="startNewTask()">
+                    🚀 Start Working
+                </button>
+            </div>
+        </section>
+
+        <!-- Today's Progress -->
+        <section class="progress-section">
+            <div class="card">
+                <h3>📊 Today's Progress</h3>
+                <div id="todaySummary" class="progress-content">
+                    Select an employee to see today's progress
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+
+        <!-- Notifications -->
+        <div id="notifications" class="notifications"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
