@@ -5,211 +5,208 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VEBLEN Task & Time Tracker</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🚀</text></svg>">
 </head>
 <body>
-    <div class="header">
-        <div class="container">
-            <h1>🚀 VEBLEN Task & Time Tracker</h1>
-        </div>
-    </div>
-
     <div class="container">
-        <!-- Employee Selection -->
-        <div class="employee-section">
-            <label for="employeeSelect">Select Employee:</label>
-            <select id="employeeSelect">
-                <option value="">-- Select Employee --</option>
-                <option value="Tony Herrera">Tony Herrera</option>
-                <option value="Alex">Alex</option>
-                <option value="Eden">Eden</option>
-                <option value="Social Media Manager">Social Media Manager</option>
-                <option value="Zac Macanally">Zac Macanally</option>
-                <option value="Ridho">Ridho</option>
-                <option value="Jevahn">Jevahn</option>
-                <option value="Risna">Risna</option>
-                <option value="Pran Setiawan">Pran Setiawan</option>
-                <option value="Wayan Arfian (Konsep Kreatif)">Wayan Arfian (Konsep Kreatif)</option>
-                <option value="Hanif (Konsep Kreatif)">Hanif (Konsep Kreatif)</option>
-            </select>
-        </div>
+        <!-- Header -->
+        <header class="header">
+            <h1>🚀 VEBLEN Task & Time Tracker</h1>
+            <div class="employee-selector">
+                <label for="employeeSelect">Employee:</label>
+                <select id="employeeSelect">
+                    <option value="">Select Employee</option>
+                    <option value="Tony Herrera">Tony Herrera</option>
+                    <option value="Alex">Alex</option>
+                    <option value="Ridho">Ridho</option>
+                    <option value="Jevahn">Jevahn</option>
+                    <option value="Risna">Risna</option>
+                    <option value="Pran Setiawan">Pran Setiawan</option>
+                    <option value="Wayan Arfian (Konsep Kreatif)">Wayan Arfian (Konsep Kreatif)</option>
+                    <option value="Hanif (Konsep Kreatif)">Hanif (Konsep Kreatif)</option>
+                    <option value="Eden">Eden</option>
+                    <option value="Social Media Manager">Social Media Manager</option>
+                    <option value="Zac Macanally">Zac Macanally</option>
+                </select>
+            </div>
+        </header>
 
-        <!-- Tab Navigation -->
-        <div class="tabs">
-            <button class="tab-button active" onclick="switchTab('time-tracker')">⏱️ Time Tracker</button>
-            <button class="tab-button" onclick="switchTab('time-clock')">🕐 Time Clock</button>
-            <button class="tab-button" onclick="switchTab('tasks')">📋 Tasks</button>
-            <button class="tab-button" onclick="switchTab('daily-report')">📊 Daily Report</button>
-            <button class="tab-button" onclick="switchTab('summary')">📈 Summary</button>
-        </div>
-
-        <!-- Tab Contents -->
-        <div id="time-tracker" class="tab-content active">
-            <div class="card">
-                <h2>Time Tracker</h2>
-                
-                <!-- Timer Display -->
-                <div class="timer-display">
-                    <h2 id="timerDisplay">00:00:00</h2>
-                    <p id="currentTaskName">No active task</p>
+        <!-- Time Tracker Section -->
+        <section class="time-tracker-section">
+            <h2>⏱️ Time Tracker</h2>
+            
+            <!-- Active Task Display -->
+            <div id="activeTaskDisplay" class="active-task-display" style="display: none;">
+                <h3>Currently Working On:</h3>
+                <div class="task-info">
+                    <p><strong>Task:</strong> <span id="currentTaskName"></span></p>
+                    <p><strong>Company:</strong> <span id="currentCompany"></span></p>
+                    <p><strong>Type:</strong> <span id="currentTaskType"></span></p>
+                    <p><strong>Time:</strong> <span id="timerDisplay" class="timer">00:00:00</span></p>
                 </div>
-
-                <!-- Task Controls -->
-                <div id="taskControls">
-                    <!-- Start New Task Form -->
-                    <div id="newTaskForm" class="form-group">
-                        <h3>Start New Task</h3>
-                        <div class="form-group">
-                            <label for="taskName">Task Name:</label>
-                            <input type="text" id="taskName" placeholder="Enter task description">
-                        </div>
-                        <div class="form-group">
-                            <label for="taskCompany">Company:</label>
-                            <select id="taskCompany">
-                                <option value="">-- Select Company --</option>
-                                <option value="VEBLEN (Internal)">VEBLEN (Internal)</option>
-                                <option value="LCMB GROUP">LCMB GROUP</option>
-                                <option value="NEWTECH TRAILERS">NEWTECH TRAILERS</option>
-                                <option value="CROWN REALITY">CROWN REALITY</option>
-                                <option value="FLECK GROUP">FLECK GROUP</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskType">Task Type:</label>
-                            <select id="taskType">
-                                <option value="">-- Select Type --</option>
-                                <option value="🎬 Video Editing">🎬 Video Editing</option>
-                                <option value="✍️ Content Creation">✍️ Content Creation</option>
-                                <option value="🤝 Client Meeting">🤝 Client Meeting</option>
-                                <option value="🔍 Research">🔍 Research</option>
-                                <option value="🎨 Design">🎨 Design</option>
-                                <option value="💻 Development">💻 Development</option>
-                                <option value="📱 Social Media">📱 Social Media</option>
-                                <option value="📝 Copywriting">📝 Copywriting</option>
-                                <option value="⚙️ Admin">⚙️ Admin</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskDescription">Description (Optional):</label>
-                            <textarea id="taskDescription" rows="3" placeholder="Additional details..."></textarea>
-                        </div>
-                        <button class="btn btn-success" onclick="startTask()">
-                            ▶️ Start Task
-                        </button>
-                    </div>
-
-                    <!-- Active Task Controls -->
-                    <div id="activeTaskControls" class="hidden">
-                        <button class="btn btn-warning" onclick="pauseTask()">
-                            ⏸️ Pause Task
-                        </button>
-                        <button class="btn btn-danger" onclick="completeTask()">
-                            ✅ Complete Task
-                        </button>
-                    </div>
-
-                    <!-- Paused Task Controls -->
-                    <div id="pausedTaskControls" class="hidden">
-                        <button class="btn btn-success" onclick="resumeTask()">
-                            ▶️ Resume Task
-                        </button>
-                        <button class="btn btn-danger" onclick="completeTask()">
-                            ✅ Complete Task
-                        </button>
-                    </div>
+                <div class="task-controls">
+                    <button id="pauseTaskBtn" class="btn btn-warning">⏸️ Pause Task</button>
+                    <button id="completeTaskBtn" class="btn btn-success">✅ Complete Task</button>
                 </div>
             </div>
-        </div>
 
-        <div id="time-clock" class="tab-content">
-            <div class="card">
-                <h2>Time Clock</h2>
-                <p class="text-muted mb-3">Log your work hours for the day</p>
-                
-                <div class="time-clock-actions">
-                    <button class="clock-btn start" onclick="timeClock('🟢 START WORK')">
-                        <span class="emoji">🟢</span>
-                        <span>START WORK</span>
-                    </button>
-                    <button class="clock-btn break" onclick="timeClock('☕ TAKE BREAK')">
-                        <span class="emoji">☕</span>
-                        <span>TAKE BREAK</span>
-                    </button>
-                    <button class="clock-btn back" onclick="timeClock('🔵 BACK TO WORK')">
-                        <span class="emoji">🔵</span>
-                        <span>BACK TO WORK</span>
-                    </button>
-                    <button class="clock-btn done" onclick="timeClock('🔴 DONE FOR TODAY')">
-                        <span class="emoji">🔴</span>
-                        <span>DONE FOR TODAY</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="tasks" class="tab-content">
-            <div class="card">
-                <h2>Assigned Tasks</h2>
-                <button class="btn btn-primary mb-3" onclick="loadAssignedTasks()">
-                    🔄 Refresh Tasks
-                </button>
-                <div id="assignedTasksList">
-                    <p class="text-muted">Select an employee and click refresh to load tasks</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="daily-report" class="tab-content">
-            <div class="card">
-                <h2>Daily Report</h2>
-                <form id="dailyReportForm">
+            <!-- Start New Task Form -->
+            <div id="startTaskForm" class="start-task-form">
+                <h3>Start New Task</h3>
+                <form id="newTaskForm">
                     <div class="form-group">
-                        <label for="reportDate">Date:</label>
-                        <input type="date" id="reportDate" value="">
+                        <label for="taskName">Task Name:</label>
+                        <input type="text" id="taskName" required>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="workSummary">Work Summary:</label>
-                        <textarea id="workSummary" rows="4" placeholder="What did you accomplish today?"></textarea>
+                        <label for="company">Company:</label>
+                        <select id="company" required>
+                            <option value="">Select Company</option>
+                            <option value="CROWN REALITY">CROWN REALITY</option>
+                            <option value="LCMB GROUP">LCMB GROUP</option>
+                            <option value="NEWTECH TRAILERS">NEWTECH TRAILERS</option>
+                            <option value="FLECK GROUP">FLECK GROUP</option>
+                            <option value="VEBLEN">VEBLEN (Internal)</option>
+                        </select>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="challenges">Challenges Faced:</label>
-                        <textarea id="challenges" rows="3" placeholder="Any issues or blockers?"></textarea>
+                        <label for="taskType">Task Type:</label>
+                        <select id="taskType" required>
+                            <option value="">Select Type</option>
+                            <option value="🎬 Video Editing">🎬 Video Editing</option>
+                            <option value="✍️ Content Creation">✍️ Content Creation</option>
+                            <option value="🤝 Client Meeting">🤝 Client Meeting</option>
+                            <option value="🔍 Research">🔍 Research</option>
+                            <option value="🎨 Design">🎨 Design</option>
+                            <option value="💻 Development">💻 Development</option>
+                            <option value="📱 Social Media">📱 Social Media</option>
+                            <option value="📝 Copywriting">📝 Copywriting</option>
+                            <option value="⚙️ Admin">⚙️ Admin</option>
+                        </select>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="tomorrowPlan">Tomorrow's Plan:</label>
-                        <textarea id="tomorrowPlan" rows="3" placeholder="What will you work on tomorrow?"></textarea>
+                        <label for="description">Description (Optional):</label>
+                        <textarea id="description" rows="3"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="workHours">Hours Worked:</label>
-                        <input type="number" id="workHours" step="0.5" placeholder="8.5">
-                    </div>
-                    <div class="form-group">
-                        <label for="additionalNotes">Additional Notes:</label>
-                        <textarea id="additionalNotes" rows="3" placeholder="Any other comments?"></textarea>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="submitDailyReport()">
-                        📤 Submit Report
-                    </button>
+                    
+                    <button type="submit" class="btn btn-primary">🚀 Start Task</button>
                 </form>
             </div>
-        </div>
+        </section>
 
-        <div id="summary" class="tab-content">
-            <div class="card">
-                <h2>Today's Summary</h2>
-                <button class="btn btn-primary mb-3" onclick="loadTodaySummary()">
-                    📊 Load Summary
-                </button>
-                <div id="summaryContent">
-                    <p class="text-muted">Click to load today's work summary</p>
-                </div>
+        <!-- Assigned Tasks Section -->
+        <section class="assigned-tasks-section">
+            <h2>📋 Assigned Tasks</h2>
+            <button id="refreshTasksBtn" class="btn btn-secondary">🔄 Refresh Tasks</button>
+            <div id="assignedTasksList" class="assigned-tasks-list">
+                <p class="loading">Select an employee to view assigned tasks...</p>
             </div>
-        </div>
+        </section>
 
-        <!-- Messages Container -->
-        <div id="messageContainer"></div>
+        <!-- Time Clock Section -->
+        <section class="time-clock-section">
+            <h2>🕐 Time Clock</h2>
+            <div class="time-clock-buttons">
+                <button id="startWorkBtn" class="btn btn-success">🟢 START WORK</button>
+                <button id="breakBtn" class="btn btn-warning">☕ BREAK</button>
+                <button id="backToWorkBtn" class="btn btn-info">🔵 BACK TO WORK</button>
+                <button id="endWorkBtn" class="btn btn-danger">🔴 END WORK</button>
+            </div>
+            <div id="timeClockStatus" class="time-clock-status"></div>
+        </section>
+
+        <!-- Daily Report Section -->
+        <section class="daily-report-section">
+            <h2>📊 Daily Report</h2>
+            <form id="dailyReportForm">
+                <div class="form-group">
+                    <label for="workSummary">What did you accomplish today?</label>
+                    <textarea id="workSummary" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="challenges">Any challenges or blockers?</label>
+                    <textarea id="challenges" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tomorrowPlan">What's the plan for tomorrow?</label>
+                    <textarea id="tomorrowPlan" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="workHours">Total Hours Worked:</label>
+                    <input type="number" id="workHours" step="0.5" min="0" max="24" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="additionalNotes">Additional Notes:</label>
+                    <textarea id="additionalNotes" rows="2"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">📤 Submit Report</button>
+            </form>
+        </section>
+
+        <!-- Today's Summary Section -->
+        <section class="summary-section">
+            <h2>📈 Today's Summary</h2>
+            <button id="refreshSummaryBtn" class="btn btn-secondary">🔄 Refresh Summary</button>
+            <div id="todaySummary" class="today-summary">
+                <p class="loading">Loading summary...</p>
+            </div>
+        </section>
+
+        <!-- Status Update Section -->
+        <section class="status-update-section">
+            <h2>🔄 Update Task Status</h2>
+            <form id="statusUpdateForm">
+                <div class="form-group">
+                    <label for="statusTaskSelect">Select Task:</label>
+                    <select id="statusTaskSelect" required>
+                        <option value="">Select a task</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newStatus">New Status:</label>
+                    <select id="newStatus" required>
+                        <option value="">Select Status</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">📝 Update Status</button>
+            </form>
+        </section>
     </div>
 
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Load JavaScript -->
     <script src="script.js"></script>
+    
+    <!-- Error Handling and Health Check -->
+    <script>
+        // Add error boundary
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            // Show user-friendly error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = 'Connection error. Please refresh the page.';
+            errorDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ff4444; color: white; padding: 10px 20px; border-radius: 5px; z-index: 9999;';
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        });
+
+        // Check API health on load
+        fetch('/api/health')
+            .then(res => res.json())
+            .then(data => console.log('API Health:', data))
+            .catch(err => console.error('API not responding:', err));
+    </script>
 </body>
 </html>
