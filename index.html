@@ -13,13 +13,14 @@
         <header class="header">
             <div class="logo">
                 <h1>🚀 VEBLEN</h1>
-                <span>Task Tracker</span>
+                <span>Unified Task & Time Tracker</span>
             </div>
             <div class="header-info">
                 <div class="live-indicator">
                     <span class="dot"></span>
                     Live
                 </div>
+                <div class="current-time" id="currentTime"></div>
             </div>
         </header>
 
@@ -41,6 +42,31 @@
                     <option value="Social Media Manager">Social Media Manager</option>
                     <option value="Zac Macanally">Zac Macanally</option>
                 </select>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <div class="card">
+                <h3>⚡ Quick Actions</h3>
+                <div class="action-grid">
+                    <button class="action-btn new-task" onclick="toggleNewTaskForm()">
+                        <span class="icon">➕</span>
+                        <span>New Task</span>
+                    </button>
+                    <a href="https://your-n8n-instance.com/form/timelogger" class="action-btn time-clock" target="_blank">
+                        <span class="icon">🕰️</span>
+                        <span>Time Clock</span>
+                    </a>
+                    <a href="https://your-n8n-instance.com/form/reportlogger" class="action-btn daily-report" target="_blank">
+                        <span class="icon">📋</span>
+                        <span>Daily Report</span>
+                    </a>
+                    <button class="action-btn refresh" onclick="loadEmployeeData()">
+                        <span class="icon">🔄</span>
+                        <span>Refresh</span>
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -68,7 +94,7 @@
         </section>
 
         <!-- New Task Creation -->
-        <section class="new-task-section">
+        <section id="newTaskSection" class="new-task-section hidden">
             <div class="card">
                 <h3>🆕 Start New Task</h3>
                 <div class="form-grid">
@@ -80,10 +106,11 @@
                         <label for="company">Company/Client</label>
                         <select id="company">
                             <option value="">Select Company</option>
+                            <option value="VEBLEN (Internal)">VEBLEN Internal</option>
                             <option value="LCMB GROUP">LCMB GROUP</option>
                             <option value="NEWTECH TRAILERS">NEWTECH TRAILERS</option>
                             <option value="CROWN REALITY">CROWN REALITY</option>
-                            <option value="VEBLEN Internal">VEBLEN Internal</option>
+                            <option value="FLECK GROUP">FLECK GROUP</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -101,10 +128,29 @@
                             <option value="Admin">⚙️ Admin</option>
                         </select>
                     </div>
+                    <div class="form-group full-width">
+                        <label for="taskDescription">Description (optional)</label>
+                        <textarea id="taskDescription" placeholder="Provide detailed task description"></textarea>
+                    </div>
                 </div>
-                <button class="btn btn-start" onclick="startNewTask()">
-                    🚀 Start Working
-                </button>
+                <div class="form-actions">
+                    <button class="btn btn-cancel" onclick="toggleNewTaskForm()">
+                        Cancel
+                    </button>
+                    <button class="btn btn-start" onclick="startNewTask()">
+                        🚀 Start Working
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assigned Tasks from Intake System -->
+        <section id="assignedTasksSection" class="assigned-tasks-section">
+            <div class="card">
+                <h3>📋 My Assigned Tasks</h3>
+                <div id="assignedTasksList" class="tasks-list">
+                    <p class="empty-state">Select an employee to see assigned tasks</p>
+                </div>
             </div>
         </section>
 
@@ -113,10 +159,45 @@
             <div class="card">
                 <h3>📊 Today's Progress</h3>
                 <div id="todaySummary" class="progress-content">
-                    Select an employee to see today's progress
+                    <div class="progress-item">
+                        <div class="progress-value">0.0</div>
+                        <div class="progress-label">Hours Today</div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-value">0</div>
+                        <div class="progress-label">Tasks Completed</div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-value">0</div>
+                        <div class="progress-label">Companies</div>
+                    </div>
                 </div>
             </div>
         </section>
+
+        <!-- Status Update Modal -->
+        <div id="statusModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🔄 Update Task Status</h3>
+                    <button class="close-btn" onclick="closeStatusModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="statusTaskInfo" class="task-info-display">
+                        <p><strong>Task:</strong> <span id="statusTaskName"></span></p>
+                        <p><strong>Company:</strong> <span id="statusTaskCompany"></span></p>
+                        <p><strong>Current Status:</strong> <span id="statusCurrentStatus"></span></p>
+                    </div>
+                    <div id="statusOptions" class="status-options">
+                        <!-- Status options will be populated dynamically -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" onclick="closeStatusModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="updateTaskStatus()">Update Status</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Loading Overlay -->
         <div id="loadingOverlay" class="loading-overlay hidden">
