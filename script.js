@@ -5,12 +5,32 @@ const CONFIG = {
     imgbbApiKey: 'YOUR_IMGBB_API_KEY' // Replace with your actual ImgBB API key
 };
 
+// Progress attribute IDs for each company
+const PROGRESS_ATTRIBUTES = {
+    "CROWN REALITY": "eb943dd8-dd91-4620-a875-59bdeee59a1f",
+    "LCMB GROUP": "4cff12df-fc0d-40aa-aade-e52161b37621",
+    "NEWTECH TRAILERS": "f78f7f1b-ec1f-4f1b-972b-6931f6925373",
+    "VEBLEN (Internal)": "05ba9fd9-6829-4049-8366-a1ec8d9281d4",
+    "FLECK GROUP": "2f9594ea-c62d-4a15-b668-0cdf2f9162cd"
+};
+
+// Status mappings based on progress
+const PROGRESS_STATUS_MAPPING = {
+    0: "Project",
+    10: "Current Project",
+    100: "Project Finished"
+};
+
 // State Management
 let currentEmployee = null;
 let activeTask = null;
 let timerInterval = null;
 let elapsedSeconds = 0;
 let workSessions = []; // Track work sessions
+let activeTaskProgress = 0;
+
+// Store loaded tasks globally for access
+window.loadedTasks = [];
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -364,6 +384,7 @@ async function loadAssignedTasks() {
         const data = await response.json();
         
         if (data.success && data.data.tasks) {
+            window.loadedTasks = data.data.tasks; // Store tasks globally
             displayAssignedTasks(data.data.tasks);
         } else {
             document.getElementById('assignedTasksList').innerHTML = '<p class="loading">No assigned tasks found.</p>';
@@ -374,7 +395,7 @@ async function loadAssignedTasks() {
     }
 }
 
-// Display assigned tasks
+// Display assigned tasks with progress
 function displayAssignedTasks(tasks) {
     const container = document.getElementById('assignedTasksList');
     
@@ -384,17 +405,310 @@ function displayAssignedTasks(tasks) {
     }
     
     container.innerHTML = tasks.map(task => `
-        <div class="task-card">
-            <h4>${task.task_name}</h4>
+        <div class="task-card" data-task-id="${task.intake_task_id}">
+            <div class="task-card-header">
+                <h4>${task.task_name}</h4>
+                <span class="task-status ${getStatusClass(task.current_status)}">${task.current_status}</span>
+            </div>
             <p><strong>Company:</strong> ${task.company}</p>
-            <p><strong>Status:</strong> ${task.current_status}</p>
             <p><strong>Due Date:</strong> ${task.due_date || 'No due date'}</p>
             ${task.description ? `<p><strong>Description:</strong> ${task.description}</p>` : ''}
-            <button class="btn btn-primary" onclick="startTaskFromAssigned('${task.intake_task_id}', '${task.task_name}', '${task.company}')">
-                Start Working
-            </button>
+            
+            <!-- Progress Bar Section -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span class="progress-label">Progress</span>
+                    <span class="progress-value">${task.progress || 0}%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: ${task.progress || 0}%"></div>
+                </div>
+                <input type="range" 
+                       class="progress-slider" 
+                       min="0" 
+                       max="100" 
+                       value="${task.progress || 0}"
+                       data-task-id="${task.intake_task_id}"
+                       data-company="${task.company}"
+                       onchange="updateTaskProgress(this)">
+            </div>
+            
+            <div class="task-actions">
+                <button class="btn btn-primary btn-sm" onclick="startTaskFromAssigned('${task.intake_task_id}', '${task.task_name}', '${task.company}')">
+                    🚀 Start Working
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="openTaskEditor('${task.intake_task_id}')">
+                    ✏️ Edit Task
+                </button>
+            </div>
         </div>
     `).join('');
+}
+
+// Function to update task progress
+async function updateTaskProgress(slider) {
+    const progress = parseInt(slider.value);
+    const taskId = slider.dataset.taskId;
+    const company = slider.dataset.company;
+    
+    // Update visual feedback immediately
+    const card = slider.closest('.task-card');
+    const progressBar = card.querySelector('.progress-bar');
+    const progressValue = card.querySelector('.progress-value');
+    
+    progressBar.style.width = `${progress}%`;
+    progressValue.textContent = `${progress}%`;
+    
+    // Determine if status should change based on progress
+    let newStatus = null;
+    let statusChanged = false;
+    
+    if (progress === 0) {
+        newStatus = "Project";
+    } else if (progress >= 10 && progress < 100) {
+        newStatus = "Current Project";
+    } else if (progress === 100) {
+        newStatus = "Project Finished";
+    }
+    
+    // Show status change notification
+    if (newStatus) {
+        const currentStatus = card.querySelector('.task-status').textContent;
+        if (currentStatus !== newStatus) {
+            statusChanged = true;
+            showToast(`Status will change to: ${newStatus}`, 'info');
+        }
+    }
+    
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'update_task_progress',
+                employee: currentEmployee,
+                task_id: taskId,
+                company: company,
+                progress: progress,
+                new_status: statusChanged ? newStatus : null,
+                progress_attribute_id: PROGRESS_ATTRIBUTES[company],
+                timestamp: new Date().toISOString()
+            })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast(`Progress updated to ${progress}%`, 'success');
+            
+            // Update status display if changed
+            if (statusChanged && newStatus) {
+                const statusElement = card.querySelector('.task-status');
+                statusElement.textContent = newStatus;
+                statusElement.className = `task-status ${getStatusClass(newStatus)}`;
+            }
+        } else {
+            showToast('Failed to update progress', 'error');
+            // Revert slider on failure
+            slider.value = slider.defaultValue;
+            progressBar.style.width = `${slider.defaultValue}%`;
+            progressValue.textContent = `${slider.defaultValue}%`;
+        }
+    } catch (error) {
+        console.error('Error updating progress:', error);
+        showToast('Error updating progress', 'error');
+    }
+}
+
+// Function to open task editor modal
+function openTaskEditor(taskId) {
+    const task = findTaskById(taskId);
+    if (!task) return;
+    
+    // Create modal HTML
+    const modalHtml = `
+        <div id="taskEditModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Task: ${task.task_name}</h2>
+                    <span class="close" onclick="closeTaskEditor()">&times;</span>
+                </div>
+                <form id="editTaskForm" onsubmit="handleTaskEdit(event, '${taskId}')">
+                    <div class="form-group">
+                        <label for="editTaskName">Task Name</label>
+                        <input type="text" id="editTaskName" value="${task.task_name}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskDescription">Description</label>
+                        <textarea id="editTaskDescription" rows="4">${task.description || ''}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskDueDate">Due Date</label>
+                        <input type="date" id="editTaskDueDate" value="${task.due_date || ''}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskProgress">Progress: <span id="progressDisplay">${task.progress || 0}%</span></label>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="editProgressBar" style="width: ${task.progress || 0}%"></div>
+                        </div>
+                        <input type="range" 
+                               id="editTaskProgress" 
+                               min="0" 
+                               max="100" 
+                               value="${task.progress || 0}"
+                               oninput="updateProgressDisplay(this.value)">
+                        <div class="progress-hints">
+                            <span class="hint">0% = Project</span>
+                            <span class="hint">10%+ = Current Project</span>
+                            <span class="hint">100% = Finished</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskStatus">Status (Override automatic status)</label>
+                        <select id="editTaskStatus">
+                            <option value="">Automatic based on progress</option>
+                            <option value="Project" ${task.current_status === 'Project' ? 'selected' : ''}>📋 Project</option>
+                            <option value="Priority Project" ${task.current_status === 'Priority Project' ? 'selected' : ''}>⭐ Priority Project</option>
+                            <option value="Current Project" ${task.current_status === 'Current Project' ? 'selected' : ''}>🔄 Current Project</option>
+                            <option value="Revision" ${task.current_status === 'Revision' ? 'selected' : ''}>📝 Revision</option>
+                            <option value="Waiting Approval" ${task.current_status === 'Waiting Approval' ? 'selected' : ''}>⏳ Waiting Approval</option>
+                            <option value="Project Finished" ${task.current_status === 'Project Finished' ? 'selected' : ''}>✅ Project Finished</option>
+                            <option value="Rejected" ${task.current_status === 'Rejected' ? 'selected' : ''}>❌ Rejected</option>
+                        </select>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeTaskEditor()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    document.getElementById('taskEditModal').style.display = 'block';
+}
+
+// Function to update progress display in modal
+function updateProgressDisplay(value) {
+    document.getElementById('progressDisplay').textContent = `${value}%`;
+    document.getElementById('editProgressBar').style.width = `${value}%`;
+    
+    // Show what status will be set
+    let autoStatus = '';
+    if (value == 0) {
+        autoStatus = 'Project';
+    } else if (value >= 10 && value < 100) {
+        autoStatus = 'Current Project';
+    } else if (value == 100) {
+        autoStatus = 'Project Finished';
+    }
+    
+    const statusSelect = document.getElementById('editTaskStatus');
+    if (statusSelect.value === '') {
+        const hint = document.createElement('div');
+        hint.className = 'status-hint';
+        hint.textContent = `Auto status: ${autoStatus}`;
+        
+        const existingHint = statusSelect.parentElement.querySelector('.status-hint');
+        if (existingHint) {
+            existingHint.textContent = `Auto status: ${autoStatus}`;
+        } else {
+            statusSelect.parentElement.appendChild(hint);
+        }
+    }
+}
+
+// Function to close task editor
+function closeTaskEditor() {
+    const modal = document.getElementById('taskEditModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Function to handle task edit submission
+async function handleTaskEdit(event, taskId) {
+    event.preventDefault();
+    
+    const task = findTaskById(taskId);
+    if (!task) return;
+    
+    const progress = parseInt(document.getElementById('editTaskProgress').value);
+    const manualStatus = document.getElementById('editTaskStatus').value;
+    
+    // Determine final status
+    let finalStatus = manualStatus;
+    if (!finalStatus) {
+        // Use automatic status based on progress
+        if (progress === 0) {
+            finalStatus = "Project";
+        } else if (progress >= 10 && progress < 100) {
+            finalStatus = "Current Project";
+        } else if (progress === 100) {
+            finalStatus = "Project Finished";
+        }
+    }
+    
+    const updateData = {
+        action: 'update_task_details',
+        employee: currentEmployee,
+        task_id: taskId,
+        company: task.company,
+        task_name: document.getElementById('editTaskName').value,
+        description: document.getElementById('editTaskDescription').value,
+        due_date: document.getElementById('editTaskDueDate').value,
+        progress: progress,
+        status: finalStatus,
+        progress_attribute_id: PROGRESS_ATTRIBUTES[task.company],
+        timestamp: new Date().toISOString()
+    };
+    
+    try {
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('Task updated successfully!', 'success');
+            closeTaskEditor();
+            loadAssignedTasks(); // Refresh the task list
+        } else {
+            showToast('Failed to update task', 'error');
+        }
+    } catch (error) {
+        console.error('Error updating task:', error);
+        showToast('Error updating task', 'error');
+    }
+}
+
+// Helper function to find task by ID
+function findTaskById(taskId) {
+    return window.loadedTasks?.find(t => t.intake_task_id === taskId);
+}
+
+// Helper function to get status class for styling
+function getStatusClass(status) {
+    const statusClasses = {
+        'Project': 'status-project',
+        'Priority Project': 'status-priority',
+        'Current Project': 'status-current',
+        'Revision': 'status-revision',
+        'Waiting Approval': 'status-waiting',
+        'Project Finished': 'status-finished',
+        'Rejected': 'status-rejected'
+    };
+    return statusClasses[status] || 'status-default';
 }
 
 // Start task from assigned tasks
@@ -553,7 +867,6 @@ function updateTimeClockStatus(action) {
     statusDiv.innerHTML = `Last action: ${action} at ${time}`;
 }
 
-// Handle daily report
 // Handle daily report with photo upload
 async function handleDailyReport(e) {
     e.preventDefault();
