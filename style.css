@@ -309,27 +309,39 @@ textarea {
 }
 
 .task-card {
-    background: var(--bg-tertiary);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 1rem;
-    border: 2px solid var(--border-color);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.task-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
 }
 
 .task-card-header {
-    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
 }
 
 .task-card h4 {
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 0.5rem;
+    margin: 0;
+    flex: 1;
 }
 
 .task-actions {
     display: flex;
     gap: 0.5rem;
-    margin-top: 0.5rem;
+    margin-top: 1rem;
 }
 
 .task-card p {
@@ -341,6 +353,177 @@ textarea {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--border-color);
+}
+
+/* Progress Bar Styles */
+.progress-section {
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.progress-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.progress-value {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.875rem;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    border-radius: var(--radius-sm);
+    transition: width var(--transition-base);
+    position: relative;
+}
+
+/* Animated progress bar */
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.progress-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--bg-tertiary);
+    outline: none;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.progress-slider:hover {
+    opacity: 1;
+}
+
+.progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--primary-color);
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+}
+
+.progress-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-md);
+}
+
+.progress-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--primary-color);
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    border: none;
+    transition: all var(--transition-fast);
+}
+
+.progress-hints {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.progress-hints .hint {
+    text-align: center;
+}
+
+/* Task Status Styles */
+.task-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-project {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-priority {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-current {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-revision {
+    background-color: #fff5eb;
+    color: #ff6b35;
+}
+
+.status-waiting {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.status-finished {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
 }
 
 /* Summary Stats */
@@ -424,48 +607,91 @@ textarea {
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
-    padding: 1rem;
+    backdrop-filter: blur(2px);
+    animation: fadeIn var(--transition-fast);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-content {
     background-color: var(--bg-primary);
-    margin: auto;
+    margin: 5% auto;
     padding: 0;
     border-radius: var(--radius-lg);
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
+    width: 90%;
+    max-width: 600px;
     box-shadow: var(--shadow-xl);
+    animation: slideIn var(--transition-base);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .modal-header {
-    padding: 1rem;
+    padding: 1.5rem;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky;
-    top: 0;
-    background: var(--bg-primary);
-    z-index: 10;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .modal-header h2 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
+    color: var(--text-primary);
 }
 
-.modal-content form {
-    padding: 1rem;
+.close {
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+    line-height: 1;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--text-primary);
+}
+
+#editTaskForm {
+    padding: 1.5rem;
 }
 
 .modal-footer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    background-color: var(--bg-secondary);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.status-hint {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    font-style: italic;
 }
 
 /* Desktop Styles */
@@ -614,7 +840,12 @@ textarea {
     }
     
     .task-actions {
-        margin-top: 0;
+        margin-top: 1rem;
+        flex-direction: row;
+    }
+    
+    .task-actions .btn {
+        width: auto;
     }
     
     .task-card p {
@@ -736,6 +967,49 @@ textarea {
         background: var(--bg-primary);
         border: 1px solid var(--border-color);
     }
+    
+    .progress-bar-container {
+        background-color: var(--bg-tertiary);
+    }
+    
+    .progress-slider {
+        background: var(--bg-tertiary);
+    }
+    
+    .status-project {
+        background-color: #1565c0;
+        color: #bbdefb;
+    }
+    
+    .status-priority {
+        background-color: #f57c00;
+        color: #fff3cd;
+    }
+    
+    .status-current {
+        background-color: #2e7d32;
+        color: #c8e6c9;
+    }
+    
+    .status-revision {
+        background-color: #d84315;
+        color: #ffccbc;
+    }
+    
+    .status-waiting {
+        background-color: #424242;
+        color: #e0e0e0;
+    }
+    
+    .status-finished {
+        background-color: #00838f;
+        color: #b2ebf2;
+    }
+    
+    .status-rejected {
+        background-color: #c62828;
+        color: #ffcdd2;
+    }
 }
 
 /* Utility Classes */
@@ -749,3 +1023,27 @@ textarea {
 .mb-1 { margin-bottom: 0.5rem; }
 .mb-2 { margin-bottom: 1rem; }
 .mb-3 { margin-bottom: 1.5rem; }
+
+/* Responsive Design for Progress Elements */
+@media (max-width: 768px) {
+    .progress-hints {
+        font-size: 0.625rem;
+    }
+    
+    .task-card {
+        padding: 1rem;
+    }
+    
+    .task-actions {
+        flex-direction: column;
+    }
+    
+    .task-actions .btn {
+        width: 100%;
+    }
+    
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+    }
+}
