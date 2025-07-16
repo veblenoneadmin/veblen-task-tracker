@@ -554,6 +554,7 @@ function updateTimeClockStatus(action) {
 }
 
 // Handle daily report
+// Handle daily report with photo upload
 async function handleDailyReport(e) {
     e.preventDefault();
     
@@ -562,15 +563,34 @@ async function handleDailyReport(e) {
         return;
     }
     
+    // Get photo file
+    const photoFile = document.getElementById('reportPhoto').files[0];
+    if (!photoFile) {
+        showToast('Please upload a photo for the report', 'warning');
+        return;
+    }
+    
+    // Upload photo to ImgBB
+    showToast('Uploading photo...', 'info');
+    const photoUrl = await uploadToImgBB(photoFile);
+    
+    if (!photoUrl) {
+        showToast('Failed to upload photo. Please try again.', 'error');
+        return;
+    }
+    
     const formData = {
         action: 'daily_report',
         employee: currentEmployee,
-        date: new Date().toISOString().split('T')[0],
-        work_summary: document.getElementById('workSummary').value,
-        challenges: document.getElementById('challenges').value,
-        tomorrow_plan: document.getElementById('tomorrowPlan').value,
-        work_hours: parseFloat(document.getElementById('workHours').value),
-        additional_notes: document.getElementById('additionalNotes').value,
+        photo_url: photoUrl,
+        company: document.getElementById('reportCompany').value,
+        date: document.getElementById('reportDate').value,
+        project_name: document.getElementById('projectName').value,
+        num_revisions: parseInt(document.getElementById('numRevisions').value),
+        total_time_spent: document.getElementById('totalTimeSpent').value,
+        notes: document.getElementById('reportNotes').value,
+        links: document.getElementById('reportLinks').value,
+        feedback_requests: document.getElementById('feedbackRequests').value,
         timestamp: new Date().toISOString()
     };
 
@@ -585,6 +605,7 @@ async function handleDailyReport(e) {
         
         if (data.success) {
             document.getElementById('dailyReportForm').reset();
+            document.getElementById('reportPhotoPreview').innerHTML = '';
             showToast('Daily report submitted successfully!', 'success');
         } else {
             showToast('Failed to submit daily report', 'error');
@@ -594,6 +615,27 @@ async function handleDailyReport(e) {
         showToast('Error submitting daily report', 'error');
     }
 }
+
+// Add photo preview handler for report
+document.getElementById('reportPhoto').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const preview = document.getElementById('reportPhotoPreview');
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        preview.innerHTML = `
+            <img src="${e.target.result}" style="max-width: 200px; max-height: 200px; margin-top: 10px; border-radius: var(--radius-md); border: 2px solid var(--border-color);">
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Photo ready for upload</p>
+        `;
+    };
+    
+    reader.readAsDataURL(file);
+});
+
+// Set default date to today for report
+document.getElementById('reportDate').valueAsDate = new Date();
 
 // Handle status update
 async function handleStatusUpdate(e) {
