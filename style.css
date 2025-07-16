@@ -87,6 +87,20 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+/* Logo Styles */
+.logo {
+    height: 2.5rem;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 0.75rem;
+    object-fit: contain;
+    /* Since the VEBLEN logo has white text on black background */
+    background: #000;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
 /* Employee Selector */
 .employee-selector {
     display: flex;
@@ -424,6 +438,10 @@ textarea {
         font-size: 1.5rem;
     }
     
+    .logo {
+        height: 2rem;
+    }
+    
     section {
         padding: 1.5rem;
     }
@@ -457,6 +475,12 @@ textarea {
         --text-secondary: #d1d5db;
         --text-tertiary: #9ca3af;
         --border-color: #4b5563;
+    }
+    
+    /* Remove black background from logo in dark mode */
+    .logo {
+        background: transparent;
+        padding: 0;
     }
     
     select,
