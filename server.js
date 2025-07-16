@@ -28,7 +28,7 @@ app.get('/health', (req, res) => {
 app.post('/api/task-action', (req, res) => {
     const { action, employee, task_name, company, task_type, timestamp } = req.body;
     
-    // Mock response based on action
+    // Mock responses based on action
     const mockResponses = {
         start_task: {
             success: true,
@@ -83,6 +83,20 @@ app.post('/api/task-action', (req, res) => {
         update_task_status: {
             success: true,
             message: "Task status updated"
+        },
+        update_task: {
+            success: true,
+            message: "Task updated successfully",
+            data: {
+                timestamp: new Date().toISOString()
+            }
+        },
+        delete_task: {
+            success: true,
+            message: "Task deleted successfully",
+            data: {
+                timestamp: new Date().toISOString()
+            }
         }
     };
     
@@ -94,8 +108,8 @@ app.post('/api/task-action', (req, res) => {
     res.json(response);
 });
 
+// Mock Google Sheets API endpoint
 app.post('/api/sheets', (req, res) => {
-    // Mock Google Sheets API response
     res.json({
         success: true,
         message: "Sheet operation completed",
