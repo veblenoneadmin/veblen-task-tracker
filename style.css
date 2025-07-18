@@ -1,4 +1,4 @@
-/* VEBLEN Task & Time Tracker - Modern CSS with Poppins & Gradients */
+/* VEBLEN Task & Time Tracker - Dark Mode with Poppins & Gradients */
 
 /* ============================================
    GOOGLE FONTS IMPORT
@@ -15,21 +15,22 @@
 }
 
 :root {
-    /* Modern Brand Colors with Gradients */
+    /* Dark Mode Gradient Colors */
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
     --danger-gradient: linear-gradient(135deg, #f43b47 0%, #453a94 100%);
+    --dark-gradient: linear-gradient(135deg, #1a1c20 0%, #2d3748 100%);
     
-    /* Solid Colors */
+    /* Solid Colors for Dark Mode */
     --primary-color: #667eea;
     --primary-dark: #5a67d8;
     --primary-light: #7c8aef;
     --secondary-color: #f093fb;
     --secondary-dark: #e879f9;
     
-    /* Status Colors with Modern Touch */
+    /* Status Colors */
     --status-project: #718096;
     --status-priority: #f56565;
     --status-current: #667eea;
@@ -38,26 +39,29 @@
     --status-finished: #48bb78;
     --status-rejected: #fc8181;
     
-    /* Modern UI Colors */
-    --background: #f7fafc;
-    --surface: #ffffff;
-    --surface-hover: #f8f9ff;
-    --border: #e2e8f0;
+    /* Dark Mode UI Colors */
+    --background: #0f1114;
+    --surface: #1a1d21;
+    --surface-hover: #242830;
+    --surface-elevated: #2d3139;
+    --border: #2d3748;
+    --border-light: #374151;
     --border-focus: #667eea;
-    --text-primary: #2d3748;
-    --text-secondary: #718096;
-    --text-light: #a0aec0;
+    --text-primary: #f7fafc;
+    --text-secondary: #a0aec0;
+    --text-muted: #718096;
     
-    /* Glass Effect */
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.18);
+    /* Glass Effect for Dark Mode */
+    --glass-bg: rgba(26, 29, 33, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-surface: rgba(45, 49, 57, 0.5);
     
-    /* Modern Shadows */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
-    --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.3);
+    /* Dark Mode Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 30px rgba(102, 126, 234, 0.4);
     
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -80,10 +84,25 @@ body {
     font-size: 16px;
     line-height: 1.6;
     color: var(--text-primary);
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: #000000;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative;
+}
+
+/* Dark mode background with gradient */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at top left, #1a1d3e 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, #2d1b3d 0%, transparent 50%),
+                linear-gradient(180deg, #0f1114 0%, #1a1d21 100%);
+    z-index: -1;
 }
 
 /* ============================================
@@ -96,17 +115,17 @@ body {
 }
 
 /* ============================================
-   HEADER STYLES - MODERN GLASS EFFECT
+   HEADER STYLES - DARK GLASS EFFECT
    ============================================ */
 .header {
     background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
     padding: var(--spacing-xl);
     margin-bottom: var(--spacing-2xl);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
     position: relative;
     overflow: hidden;
 }
@@ -119,7 +138,7 @@ body {
     width: 200%;
     height: 200%;
     background: var(--primary-gradient);
-    opacity: 0.05;
+    opacity: 0.03;
     transform: rotate(45deg);
     z-index: -1;
 }
@@ -135,12 +154,13 @@ body {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
+    filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3));
 }
 
 .logo {
     height: 48px;
     width: auto;
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.4));
 }
 
 .employee-selector {
@@ -159,7 +179,7 @@ body {
 
 .employee-selector select {
     padding: var(--spacing-sm) var(--spacing-lg);
-    border: 2px solid transparent;
+    border: 2px solid var(--border);
     border-radius: var(--radius-full);
     background: var(--surface);
     font-size: 0.875rem;
@@ -173,16 +193,17 @@ body {
 .employee-selector select:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
 }
 
 .employee-selector select:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
 }
 
 /* ============================================
-   SECTION STYLES - MODERN CARDS
+   SECTION STYLES - DARK CARDS
    ============================================ */
 section {
     background: var(--glass-bg);
@@ -203,7 +224,7 @@ section::before {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 3px;
     background: var(--primary-gradient);
 }
 
@@ -225,7 +246,7 @@ section h3 {
 }
 
 /* ============================================
-   FORM STYLES - MODERN INPUTS
+   FORM STYLES - DARK MODE INPUTS
    ============================================ */
 .form-group {
     margin-bottom: var(--spacing-lg);
@@ -234,7 +255,7 @@ section h3 {
 .form-group label {
     display: block;
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--text-secondary);
     margin-bottom: var(--spacing-sm);
     font-size: 0.875rem;
 }
@@ -261,8 +282,8 @@ section h3 {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    background-color: var(--surface-hover);
 }
 
 .form-group textarea {
@@ -270,8 +291,30 @@ section h3 {
     resize: vertical;
 }
 
+/* Dark mode file input */
+.form-group input[type="file"] {
+    color: var(--text-secondary);
+}
+
+.form-group input[type="file"]::file-selector-button {
+    background: var(--primary-gradient);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: var(--spacing-md);
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
 /* ============================================
-   BUTTON STYLES - GRADIENT BUTTONS
+   BUTTON STYLES - GLOWING GRADIENT BUTTONS
    ============================================ */
 .btn {
     display: inline-flex;
@@ -328,31 +371,46 @@ section h3 {
 .btn-primary {
     background: var(--primary-gradient);
     color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .btn-secondary {
-    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+    background: var(--surface-elevated);
     color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+.btn-secondary:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary-color);
 }
 
 .btn-success {
     background: var(--success-gradient);
     color: white;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
 }
 
 .btn-warning {
     background: var(--warning-gradient);
     color: white;
+    box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);
 }
 
 .btn-danger {
     background: var(--danger-gradient);
     color: white;
+    box-shadow: 0 4px 15px rgba(244, 59, 71, 0.3);
 }
 
 .btn-info {
     background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
     color: white;
+    box-shadow: 0 4px 15px rgba(137, 247, 254, 0.3);
 }
 
 .btn-sm {
@@ -361,15 +419,16 @@ section h3 {
 }
 
 /* ============================================
-   TIME TRACKER SECTION - MODERN CARDS
+   TIME TRACKER SECTION - DARK CARDS
    ============================================ */
 .active-task-display {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    border: 1px solid rgba(102, 126, 234, 0.3);
     border-radius: var(--radius-xl);
     padding: var(--spacing-xl);
     margin-bottom: var(--spacing-xl);
-    color: white;
-    box-shadow: var(--shadow-xl);
+    color: var(--text-primary);
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
     position: relative;
     overflow: hidden;
 }
@@ -381,7 +440,7 @@ section h3 {
     right: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
     animation: pulse 4s ease-in-out infinite;
 }
 
@@ -392,20 +451,23 @@ section h3 {
 
 .task-info p {
     margin-bottom: var(--spacing-sm);
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-secondary);
 }
 
 .task-info strong {
-    color: white;
+    color: var(--text-primary);
     margin-right: var(--spacing-sm);
 }
 
 .timer {
     font-size: 3rem;
     font-weight: 700;
-    color: white;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-variant-numeric: tabular-nums;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3));
 }
 
 .task-controls {
@@ -414,21 +476,11 @@ section h3 {
     margin-top: var(--spacing-lg);
 }
 
-.task-controls .btn {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.task-controls .btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
 .start-task-form {
-    background: var(--surface-hover);
+    background: var(--surface);
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 #imagePreview,
@@ -442,10 +494,11 @@ section h3 {
     max-height: 200px;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
+    border: 2px solid var(--border);
 }
 
 /* ============================================
-   ASSIGNED TASKS SECTION - MODERN CARDS
+   ASSIGNED TASKS SECTION - DARK CARDS
    ============================================ */
 .assigned-tasks-list {
     display: grid;
@@ -455,6 +508,7 @@ section h3 {
 
 .task-card {
     background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
     box-shadow: var(--shadow-md);
@@ -476,6 +530,7 @@ section h3 {
 .task-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
+    border-color: var(--primary-color);
 }
 
 .task-card-header {
@@ -504,38 +559,45 @@ section h3 {
 }
 
 .status-project {
-    background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
-    color: white;
+    background: linear-gradient(135deg, rgba(113, 128, 150, 0.2) 0%, rgba(74, 85, 104, 0.2) 100%);
+    color: #a0aec0;
+    border: 1px solid rgba(113, 128, 150, 0.3);
 }
 
 .status-priority {
-    background: var(--danger-gradient);
-    color: white;
+    background: linear-gradient(135deg, rgba(245, 101, 101, 0.2) 0%, rgba(229, 62, 62, 0.2) 100%);
+    color: #fc8181;
+    border: 1px solid rgba(245, 101, 101, 0.3);
 }
 
 .status-current {
-    background: var(--primary-gradient);
-    color: white;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(90, 103, 216, 0.2) 100%);
+    color: #7c8aef;
+    border: 1px solid rgba(102, 126, 234, 0.3);
 }
 
 .status-revision {
-    background: var(--warning-gradient);
-    color: white;
+    background: linear-gradient(135deg, rgba(246, 173, 85, 0.2) 0%, rgba(237, 137, 54, 0.2) 100%);
+    color: #f6ad55;
+    border: 1px solid rgba(246, 173, 85, 0.3);
 }
 
 .status-waiting {
-    background: linear-gradient(135deg, #b794f4 0%, #9f7aea 100%);
-    color: white;
+    background: linear-gradient(135deg, rgba(183, 148, 244, 0.2) 0%, rgba(159, 122, 234, 0.2) 100%);
+    color: #b794f4;
+    border: 1px solid rgba(183, 148, 244, 0.3);
 }
 
 .status-finished {
-    background: var(--success-gradient);
-    color: white;
+    background: linear-gradient(135deg, rgba(72, 187, 120, 0.2) 0%, rgba(56, 161, 105, 0.2) 100%);
+    color: #48bb78;
+    border: 1px solid rgba(72, 187, 120, 0.3);
 }
 
 .status-rejected {
-    background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
-    color: white;
+    background: linear-gradient(135deg, rgba(252, 129, 129, 0.2) 0%, rgba(245, 101, 101, 0.2) 100%);
+    color: #fc8181;
+    border: 1px solid rgba(252, 129, 129, 0.3);
 }
 
 .task-card p {
@@ -549,7 +611,7 @@ section h3 {
     font-weight: 600;
 }
 
-/* Progress Section - Modern Style */
+/* Progress Section - Dark Mode Style */
 .progress-section {
     margin: var(--spacing-lg) 0;
 }
@@ -576,11 +638,11 @@ section h3 {
 
 .progress-bar-container {
     height: 10px;
-    background-color: var(--border);
+    background-color: var(--surface-elevated);
     border-radius: var(--radius-full);
     overflow: hidden;
     margin-bottom: var(--spacing-sm);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .progress-bar {
@@ -589,6 +651,7 @@ section h3 {
     transition: width 0.5s ease;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 .progress-bar::after {
@@ -626,9 +689,9 @@ section h3 {
 .progress-slider::-webkit-slider-track {
     width: 100%;
     height: 8px;
-    background: var(--border);
+    background: var(--surface-elevated);
     border-radius: var(--radius-full);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .progress-slider::-webkit-slider-thumb {
@@ -640,21 +703,21 @@ section h3 {
     border-radius: 50%;
     cursor: pointer;
     margin-top: -8px;
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
     transition: all 0.3s ease;
 }
 
 .progress-slider::-webkit-slider-thumb:hover {
     transform: scale(1.2);
-    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.6);
 }
 
 .progress-slider::-moz-range-track {
     width: 100%;
     height: 8px;
-    background: var(--border);
+    background: var(--surface-elevated);
     border-radius: var(--radius-full);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .progress-slider::-moz-range-thumb {
@@ -664,13 +727,13 @@ section h3 {
     border-radius: 50%;
     cursor: pointer;
     border: none;
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
     transition: all 0.3s ease;
 }
 
 .progress-slider::-moz-range-thumb:hover {
     transform: scale(1.2);
-    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.6);
 }
 
 .task-actions {
@@ -680,7 +743,7 @@ section h3 {
 }
 
 /* ============================================
-   TIME CLOCK SECTION - GRADIENT BUTTONS
+   TIME CLOCK SECTION - DARK BUTTONS
    ============================================ */
 .time-clock-buttons {
     display: grid;
@@ -696,12 +759,13 @@ section h3 {
 
 .time-clock-status {
     padding: var(--spacing-lg);
-    background: var(--surface-hover);
+    background: var(--surface);
     border-radius: var(--radius-md);
     text-align: center;
     color: var(--text-secondary);
     font-weight: 500;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
 }
 
 /* ============================================
@@ -713,7 +777,7 @@ section h3 {
 }
 
 /* ============================================
-   TODAY'S SUMMARY SECTION - MODERN STATS
+   TODAY'S SUMMARY SECTION - DARK STATS
    ============================================ */
 .summary-stats {
     display: grid;
@@ -723,6 +787,7 @@ section h3 {
 
 .stat-item {
     background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
     text-align: center;
@@ -738,13 +803,14 @@ section h3 {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 3px;
     background: var(--primary-gradient);
 }
 
 .stat-item:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
 }
 
 .stat-item h4 {
@@ -763,10 +829,11 @@ section h3 {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3));
 }
 
 /* ============================================
-   TOAST NOTIFICATIONS - MODERN STYLE
+   TOAST NOTIFICATIONS - DARK STYLE
    ============================================ */
 .toast-container {
     position: fixed;
@@ -776,10 +843,10 @@ section h3 {
 }
 
 .toast {
-    background: var(--glass-bg);
+    background: var(--surface);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: var(--spacing-md) var(--spacing-lg);
     margin-bottom: var(--spacing-sm);
@@ -790,6 +857,7 @@ section h3 {
     font-weight: 500;
     position: relative;
     overflow: hidden;
+    color: var(--text-primary);
 }
 
 .toast::before {
@@ -862,7 +930,7 @@ section h3 {
 }
 
 /* ============================================
-   TASK EDITOR MODAL - MODERN GLASS STYLE
+   TASK EDITOR MODAL - DARK GLASS STYLE
    ============================================ */
 
 /* Modal Overlay */
@@ -875,7 +943,7 @@ section h3 {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     animation: fadeIn 0.3s ease;
@@ -883,12 +951,12 @@ section h3 {
 
 /* Modal Content */
 .modal-content {
-    background: var(--glass-bg);
+    background: var(--surface);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     margin: 2% auto;
     padding: 0;
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     width: 90%;
     max-width: 900px;
@@ -913,8 +981,8 @@ section h3 {
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-xl);
-    border-bottom: 1px solid var(--glass-border);
-    background: var(--primary-gradient);
+    border-bottom: 1px solid var(--border);
+    background: var(--dark-gradient);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
@@ -922,12 +990,15 @@ section h3 {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 600;
-    color: white;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Close Button */
 .close {
-    color: white;
+    color: var(--text-secondary);
     font-size: 2rem;
     font-weight: 300;
     line-height: 1;
@@ -945,7 +1016,8 @@ section h3 {
 }
 
 .close:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(102, 126, 234, 0.2);
+    color: var(--primary-color);
     transform: rotate(90deg);
 }
 
@@ -962,7 +1034,7 @@ section h3 {
 }
 
 .modal-body::-webkit-scrollbar-track {
-    background: var(--border);
+    background: var(--surface-elevated);
     border-radius: var(--radius-full);
 }
 
@@ -973,7 +1045,7 @@ section h3 {
 
 /* ID Input Group */
 .id-input-group {
-    background: var(--surface-hover);
+    background: var(--surface-elevated);
     border: 2px dashed var(--primary-color);
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
@@ -999,7 +1071,7 @@ section h3 {
 .paste-label {
     flex: 0 0 150px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-secondary);
     font-size: 0.875rem;
 }
 
@@ -1011,13 +1083,15 @@ section h3 {
     font-size: 0.875rem;
     font-family: 'Consolas', 'Monaco', monospace;
     transition: all 0.3s ease;
-    background: var(--surface);
+    background: var(--background);
+    color: var(--text-primary);
 }
 
 .paste-input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    background: var(--surface);
 }
 
 .quick-paste-btn {
@@ -1035,7 +1109,7 @@ section h3 {
 
 .quick-paste-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
 }
 
 .load-task-btn {
@@ -1048,8 +1122,8 @@ section h3 {
 /* Task Info Display */
 .task-info-display {
     display: none;
-    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-    border: 1px solid #c7d2fe;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 1px solid rgba(102, 126, 234, 0.3);
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
@@ -1061,7 +1135,7 @@ section h3 {
 
 .task-info-display h4 {
     margin: 0 0 var(--spacing-md) 0;
-    color: var(--primary-color);
+    color: var(--primary-light);
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -1082,7 +1156,7 @@ section h3 {
 
 .info-label {
     font-size: 0.75rem;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -1172,15 +1246,17 @@ section h3 {
 
 .hint {
     padding: var(--spacing-xs) var(--spacing-md);
-    background: var(--surface-hover);
+    background: var(--surface-elevated);
     border-radius: var(--radius-full);
     font-weight: 500;
+    border: 1px solid var(--border);
 }
 
 /* Assigned Select */
 .assigned-select {
     min-height: 150px;
     padding: var(--spacing-md);
+    background: var(--surface-elevated);
 }
 
 /* Modal Footer */
@@ -1206,9 +1282,9 @@ section h3 {
 #editModalProgress::-webkit-slider-track {
     width: 100%;
     height: 8px;
-    background: var(--border);
+    background: var(--surface-elevated);
     border-radius: var(--radius-full);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 #editModalProgress::-webkit-slider-thumb {
@@ -1220,21 +1296,21 @@ section h3 {
     border-radius: 50%;
     cursor: pointer;
     margin-top: -8px;
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
     transition: all 0.3s ease;
 }
 
 #editModalProgress::-webkit-slider-thumb:hover {
     transform: scale(1.2);
-    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.6);
 }
 
 #editModalProgress::-moz-range-track {
     width: 100%;
     height: 8px;
-    background: var(--border);
+    background: var(--surface-elevated);
     border-radius: var(--radius-full);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 #editModalProgress::-moz-range-thumb {
@@ -1244,13 +1320,13 @@ section h3 {
     border-radius: 50%;
     cursor: pointer;
     border: none;
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
     transition: all 0.3s ease;
 }
 
 #editModalProgress::-moz-range-thumb:hover {
     transform: scale(1.2);
-    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.6);
 }
 
 /* Checkbox styling */
@@ -1272,6 +1348,11 @@ input[type="checkbox"] {
 
 .logo {
     animation: float 3s ease-in-out infinite;
+}
+
+/* Glow effect for focused elements */
+*:focus {
+    outline: none;
 }
 
 /* ============================================
@@ -1360,6 +1441,7 @@ input[type="checkbox"] {
 @media print {
     body {
         background: white;
+        color: black;
     }
     
     .header,
@@ -1374,11 +1456,20 @@ input[type="checkbox"] {
         break-inside: avoid;
         box-shadow: none;
         border: 1px solid #000;
+        background: white;
     }
     
     section {
         box-shadow: none;
         border: 1px solid #000;
         background: white;
+    }
+    
+    .task-status,
+    .stat-value,
+    .progress-value {
+        -webkit-text-fill-color: initial;
+        background: none;
+        color: black;
     }
 }
