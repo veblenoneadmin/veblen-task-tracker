@@ -52,7 +52,6 @@ function initializeApp() {
     document.getElementById('completeTaskBtn').addEventListener('click', handleCompleteTask);
     document.getElementById('refreshTasksBtn').addEventListener('click', loadAssignedTasks);
     document.getElementById('dailyReportForm').addEventListener('submit', handleDailyReport);
-    document.getElementById('statusUpdateForm').addEventListener('submit', handleStatusUpdate);
     document.getElementById('refreshSummaryBtn').addEventListener('click', loadTodaySummary);
     
     // Time clock buttons
@@ -948,50 +947,6 @@ async function handleDailyReport(e) {
     }
 }
 
-// Handle status update
-async function handleStatusUpdate(e) {
-    e.preventDefault();
-    
-    if (!currentEmployee) {
-        showToast('Please select an employee first', 'warning');
-        return;
-    }
-    
-    const taskSelect = document.getElementById('statusTaskSelect');
-    const selectedOption = taskSelect.options[taskSelect.selectedIndex];
-    
-    const formData = {
-        action: 'update_task_status',
-        employee: currentEmployee,
-        task_id: taskSelect.value,
-        master_id: selectedOption.dataset.masterId,
-        company_id: selectedOption.dataset.companyId,
-        new_status: document.getElementById('newStatus').value,
-        company: selectedOption.dataset.company,
-        timestamp: new Date().toISOString()
-    };
-
-    try {
-        const response = await fetch(CONFIG.n8nWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-            document.getElementById('statusUpdateForm').reset();
-            showToast('Task status updated successfully!', 'success');
-            loadAssignedTasks();
-        } else {
-            showToast('Failed to update task status', 'error');
-        }
-    } catch (error) {
-        console.error('Error updating task status:', error);
-        showToast('Error updating task status', 'error');
-    }
-}
 
 // Load today's summary
 async function loadTodaySummary() {
