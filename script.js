@@ -2,7 +2,7 @@
 const CONFIG = {
     n8nWebhookUrl: '/api/task-action',
     sheetsApiUrl: '/api/sheets',
-    imgbbApiKey: 'YOUR_IMGBB_API_KEY' // Replace with your actual ImgBB API key
+    imgbbApiKey: '679bd601ac49c50cae877fb240620cfe' // Replace with your actual ImgBB API key
 };
 
 // Progress attribute IDs for each company
