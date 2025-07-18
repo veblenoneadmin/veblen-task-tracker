@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 // Webhook URLs
 const WEBHOOKS = {
     reportLogger: 'https://primary-s0q-production.up.railway.app/webhook/reportlogger',
-    taskIntake: 'https://primary-s0q-production.up.railway.app/webhook/taskintake',
+    taskIntake: 'https://primary-s0q-production.up.railway.app/webhook/taskintakewebhook',
     timeLogger: 'https://primary-s0q-production.up.railway.app/webhook/timelogger'
 };
 
