@@ -1,1049 +1,548 @@
-/* Import Poppins Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-/* Reset and Base Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    /* Color Palette */
-    --primary-color: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --secondary-color: #22d3ee;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #ef4444;
-    --info-color: #3b82f6;
-    
-    /* Neutral Colors */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f3f4f6;
-    --text-primary: #111827;
-    --text-secondary: #6b7280;
-    --text-tertiary: #9ca3af;
-    --border-color: #e5e7eb;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    
-    /* Border Radius */
-    --radius-sm: 0.375rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
-    
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-base: 300ms ease;
-}
-
-body {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-    line-height: 1.6;
-    min-height: 100vh;
-}
-
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-}
-
-/* Header */
-.header {
-    background: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow-md);
-}
-
-.header h1 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-family: 'Poppins', sans-serif;
-    margin-bottom: 1rem;
-}
-
-/* Logo Styles */
-.logo {
-    height: 1.75rem;
-    width: auto;
-    vertical-align: middle;
-    object-fit: contain;
-    background: #000;
-    padding: 0.25rem 0.5rem;
-    border-radius: var(--radius-sm);
-}
-
-/* Employee Selector */
-.employee-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.employee-selector label {
-    font-weight: 500;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-}
-
-/* Select Styles */
-select {
-    appearance: none;
-    background-color: var(--bg-primary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 2.5rem 0.75rem 1rem;
-    font-size: 1rem;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    width: 100%;
-}
-
-/* Section Styles */
-section {
-    background: var(--bg-primary);
-    border-radius: var(--radius-lg);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow-md);
-}
-
-section h2 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-/* Form Styles */
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 0.25rem;
-    font-size: 0.875rem;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="date"],
-input[type="file"],
-textarea {
-    width: 100%;
-    padding: 0.625rem 0.875rem;
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-md);
-    font-size: 0.9375rem;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    transition: all var(--transition-fast);
-    background-color: var(--bg-primary);
-}
-
-textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-/* Button Styles */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    padding: 0.625rem 1.25rem;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 0.875rem;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    text-decoration: none;
-    white-space: nowrap;
-    width: 100%;
-}
-
-.btn-sm {
-    padding: 0.5rem 0.875rem;
-    font-size: 0.8125rem;
-}
-
-/* Button Colors */
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-    color: white;
-}
-
-.btn-secondary {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-}
-
-.btn-success {
-    background: var(--success-color);
-    color: white;
-}
-
-.btn-warning {
-    background: var(--warning-color);
-    color: white;
-}
-
-.btn-danger {
-    background: var(--danger-color);
-    color: white;
-}
-
-.btn-info {
-    background: var(--info-color);
-    color: white;
-}
-
-/* Active Task Display */
-.active-task-display {
-    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
-    border-radius: var(--radius-md);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border: 2px solid var(--border-color);
-}
-
-.active-task-display h3 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.task-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.task-info p {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-}
-
-.task-info strong {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.timer {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    font-variant-numeric: tabular-nums;
-    text-align: center;
-    margin: 0.5rem 0;
-}
-
-.task-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-}
-
-/* Time Clock Section */
-.time-clock-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.time-clock-status {
-    padding: 0.75rem;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-}
-
-/* Assigned Tasks */
-.assigned-tasks-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.task-card {
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    transition: all var(--transition-fast);
-    position: relative;
-}
-
-.task-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-}
-
-.task-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.task-card h4 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-    flex: 1;
-}
-
-.task-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.task-card p {
-    font-size: 0.875rem;
-    margin: 0.25rem 0;
-}
-
-.task-card-actions {
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--border-color);
-}
-
-/* Progress Bar Styles */
-.progress-section {
-    margin: 1rem 0;
-    padding: 1rem 0;
-    border-top: 1px solid var(--border-color);
-}
-
-.progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.progress-label {
-    font-weight: 500;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-}
-
-.progress-value {
-    font-weight: 600;
-    color: var(--primary-color);
-    font-size: 0.875rem;
-}
-
-.progress-bar-container {
-    width: 100%;
-    height: 8px;
-    background-color: var(--bg-tertiary);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    margin-bottom: 0.5rem;
-    position: relative;
-}
-
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
-    border-radius: var(--radius-sm);
-    transition: width var(--transition-base);
-    position: relative;
-}
-
-/* Animated progress bar */
-.progress-bar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.3),
-        transparent
-    );
-    animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(100%);
-    }
-}
-
-.progress-slider {
-    width: 100%;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 6px;
-    background: var(--bg-tertiary);
-    outline: none;
-    opacity: 0.7;
-    transition: opacity var(--transition-fast);
-    cursor: pointer;
-    border-radius: var(--radius-sm);
-}
-
-.progress-slider:hover {
-    opacity: 1;
-}
-
-.progress-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--primary-color);
-    cursor: pointer;
-    border-radius: 50%;
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-fast);
-}
-
-.progress-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: var(--shadow-md);
-}
-
-.progress-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    background: var(--primary-color);
-    cursor: pointer;
-    border-radius: 50%;
-    box-shadow: var(--shadow-sm);
-    border: none;
-    transition: all var(--transition-fast);
-}
-
-.progress-hints {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--text-tertiary);
-}
-
-.progress-hints .hint {
-    text-align: center;
-}
-
-/* Task Status Styles */
-.task-status {
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    font-weight: 500;
-    display: inline-block;
-}
-
-.status-project {
-    background-color: #e3f2fd;
-    color: #1976d2;
-}
-
-.status-priority {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.status-current {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.status-revision {
-    background-color: #fff5eb;
-    color: #ff6b35;
-}
-
-.status-waiting {
-    background-color: #f8f9fa;
-    color: #6c757d;
-}
-
-.status-finished {
-    background-color: #d1ecf1;
-    color: #0c5460;
-}
-
-.status-rejected {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-/* Summary Stats */
-.summary-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 0.5rem;
-}
-
-.stat-item {
-    background: var(--bg-primary);
-    padding: 0.75rem;
-    border-radius: var(--radius-md);
-    text-align: center;
-    border: 1px solid var(--border-color);
-}
-
-.stat-item h4 {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    margin-bottom: 0.25rem;
-    font-weight: 500;
-}
-
-.stat-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-
-/* Loading State */
-.loading {
-    text-align: center;
-    color: var(--text-tertiary);
-    padding: 1.5rem;
-    font-size: 0.875rem;
-}
-
-/* Toast Notifications */
-.toast-container {
-    position: fixed;
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    pointer-events: none;
-}
-
-.toast {
-    background: white;
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    animation: slideUp 0.3s ease;
-    pointer-events: auto;
-    font-size: 0.875rem;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* Modal Styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(2px);
-    animation: fadeIn var(--transition-fast);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.modal-content {
-    background-color: var(--bg-primary);
-    margin: 5% auto;
-    padding: 0;
-    border-radius: var(--radius-lg);
-    width: 90%;
-    max-width: 600px;
-    box-shadow: var(--shadow-xl);
-    animation: slideIn var(--transition-base);
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.modal-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--bg-secondary);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.modal-header h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.close {
-    color: var(--text-secondary);
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color var(--transition-fast);
-    line-height: 1;
-}
-
-.close:hover,
-.close:focus {
-    color: var(--text-primary);
-}
-
-#editTaskForm {
-    padding: 1.5rem;
-}
-
-.modal-footer {
-    padding: 1.5rem;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    background-color: var(--bg-secondary);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-}
-
-.status-hint {
-    margin-top: 0.25rem;
-    font-size: 0.875rem;
-    color: var(--primary-color);
-    font-style: italic;
-}
-
-/* Desktop Styles */
-@media (min-width: 768px) {
-    .container {
-        padding: 2rem;
+// Initialize task editor modal variables
+let currentModalTaskData = null;
+
+// Open task editor modal
+function openTaskEditorModal() {
+    // Create modal if it doesn't exist
+    if (!document.getElementById('taskEditorModal')) {
+        createTaskEditorModal();
+        // Add event listener to the form
+        document.getElementById('taskEditModalForm').addEventListener('submit', handleModalTaskUpdate);
     }
     
-    .header {
-        padding: 2rem;
-        margin-bottom: 2rem;
-        border-radius: var(--radius-xl);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    // Show modal
+    document.getElementById('taskEditorModal').style.display = 'block';
+}
+
+// Close task editor modal
+function closeTaskEditorModal() {
+    const modal = document.getElementById('taskEditorModal');
+    if (modal) {
+        modal.style.display = 'none';
+        // Reset form
+        resetModalTaskEditor();
     }
-    
-    .header h1 {
-        font-size: 2rem;
-        margin-bottom: 0;
-    }
-    
-    .logo {
-        height: 2.5rem;
-        margin-right: 0.75rem;
-    }
-    
-    .employee-selector {
-        flex-direction: row;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .employee-selector label {
-        font-size: 1rem;
-    }
-    
-    select {
-        width: auto;
-        min-width: 200px;
-    }
-    
-    section {
-        padding: 2rem;
-        margin-bottom: 2rem;
-        border-radius: var(--radius-xl);
-    }
-    
-    section h2 {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-group label {
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    input[type="file"],
-    textarea {
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-    }
-    
-    textarea {
-        min-height: 100px;
-    }
-    
-    .btn {
-        width: auto;
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-    }
-    
-    .btn-sm {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-    }
-    
-    .active-task-display {
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border-radius: var(--radius-lg);
-    }
-    
-    .active-task-display h3 {
-        font-size: 1.25rem;
-        margin-bottom: 1rem;
-    }
-    
-    .task-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .task-info p {
-        font-size: 1rem;
-    }
-    
-    .timer {
-        font-size: 2rem;
-    }
-    
-    .task-controls {
-        display: flex;
-        gap: 1rem;
-    }
-    
-    .time-clock-buttons {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .time-clock-status {
-        padding: 1rem;
-        font-size: 1rem;
-    }
-    
-    .assigned-tasks-list {
-        gap: 1rem;
-    }
-    
-    .task-card {
-        padding: 1.5rem;
-    }
-    
-    .task-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1rem;
-    }
-    
-    .task-card h4 {
-        font-size: 1.125rem;
-    }
-    
-    .task-actions {
-        margin-top: 1rem;
-        flex-direction: row;
-    }
-    
-    .task-actions .btn {
-        width: auto;
-    }
-    
-    .task-card p {
-        font-size: 1rem;
-    }
-    
-    .task-card-actions {
-        margin-top: 1rem;
-        padding-top: 1rem;
-    }
-    
-    .summary-stats {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
-    
-    .stat-item {
-        padding: 1.5rem;
-    }
-    
-    .stat-item h4 {
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .stat-value {
-        font-size: 2rem;
-    }
-    
-    .loading {
-        padding: 2rem;
-        font-size: 1rem;
-    }
-    
-    .toast-container {
-        top: 2rem;
-        right: 2rem;
-        bottom: auto;
-        left: auto;
-    }
-    
-    .toast {
-        padding: 1rem 1.5rem;
-        font-size: 1rem;
-    }
-    
-    @keyframes slideUp {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
+}
+
+// Paste from clipboard
+async function pasteFromClipboard(inputId) {
+    try {
+        const text = await navigator.clipboard.readText();
+        // Extract UUID pattern from pasted text
+        const uuidPattern = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
+        const match = text.match(uuidPattern);
+        
+        if (match) {
+            document.getElementById(inputId).value = match[0];
+            showToast('ID pasted successfully!', 'success');
+        } else {
+            showToast('No valid ID found in clipboard', 'warning');
         }
-        to {
-            transform: translateX(0);
-            opacity: 1;
+    } catch (err) {
+        showToast('Failed to read clipboard', 'error');
+    }
+}
+
+// Load task for editing
+async function loadTaskForEdit() {
+    const masterBoardId = document.getElementById('masterBoardId').value.trim();
+    const companyBoardId = document.getElementById('companyBoardId').value.trim();
+    
+    if (!masterBoardId && !companyBoardId) {
+        showToast('Please enter at least one Task ID', 'warning');
+        return;
+    }
+    
+    // Show loading state
+    showToast('Loading task data...', 'info');
+    
+    try {
+        // Call API to get task data
+        // For now, we'll use the loaded tasks data if available
+        let taskData = null;
+        
+        // Try to find task in loaded tasks
+        if (window.loadedTasks && window.loadedTasks.length > 0) {
+            taskData = window.loadedTasks.find(task => 
+                task.intake_task_id === companyBoardId || 
+                task.master_task_id === masterBoardId
+            );
         }
-    }
-    
-    .modal {
-        padding: 2rem;
-    }
-    
-    .modal-content {
-        margin: 2% auto;
-        max-width: 600px;
-    }
-    
-    .modal-header {
-        padding: 1.5rem 2rem;
-    }
-    
-    .modal-header h2 {
-        font-size: 1.5rem;
-    }
-    
-    .modal-content form {
-        padding: 2rem;
-    }
-    
-    .modal-footer {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-}
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-primary: #1f2937;
-        --bg-secondary: #111827;
-        --bg-tertiary: #374151;
-        --text-primary: #f9fafb;
-        --text-secondary: #d1d5db;
-        --text-tertiary: #9ca3af;
-        --border-color: #4b5563;
-    }
-    
-    .logo {
-        background: transparent;
-        padding: 0;
-    }
-    
-    select,
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    input[type="file"],
-    textarea {
-        background-color: var(--bg-tertiary);
-        color: var(--text-primary);
-    }
-    
-    .btn-secondary {
-        background: var(--bg-tertiary);
-        color: var(--text-primary);
-    }
-    
-    .toast {
-        background: var(--bg-primary);
-        border: 1px solid var(--border-color);
-    }
-    
-    .progress-bar-container {
-        background-color: var(--bg-tertiary);
-    }
-    
-    .progress-slider {
-        background: var(--bg-tertiary);
-    }
-    
-    .status-project {
-        background-color: #1565c0;
-        color: #bbdefb;
-    }
-    
-    .status-priority {
-        background-color: #f57c00;
-        color: #fff3cd;
-    }
-    
-    .status-current {
-        background-color: #2e7d32;
-        color: #c8e6c9;
-    }
-    
-    .status-revision {
-        background-color: #d84315;
-        color: #ffccbc;
-    }
-    
-    .status-waiting {
-        background-color: #424242;
-        color: #e0e0e0;
-    }
-    
-    .status-finished {
-        background-color: #00838f;
-        color: #b2ebf2;
-    }
-    
-    .status-rejected {
-        background-color: #c62828;
-        color: #ffcdd2;
+        
+        if (!taskData) {
+            // Make API call to fetch task data
+            const response = await fetch(`/api/task/${companyBoardId || masterBoardId}?company=${currentEmployee}`);
+            if (response.ok) {
+                const result = await response.json();
+                taskData = result.data;
+            }
+        }
+        
+        if (taskData) {
+            currentModalTaskData = {
+                master_board_id: masterBoardId,
+                company_board_id: companyBoardId,
+                company: taskData.company || 'VEBLEN (Internal)',
+                task_name: taskData.task_name || taskData.title || '',
+                description: taskData.description || '',
+                priority: taskData.priority || 'Medium',
+                due_date: taskData.due_date || '',
+                status: taskData.current_status || taskData.status || '',
+                progress: taskData.progress || 0,
+                assigned: taskData.assigned || []
+            };
+        } else {
+            // Create empty task data structure
+            currentModalTaskData = {
+                master_board_id: masterBoardId,
+                company_board_id: companyBoardId,
+                company: '',
+                task_name: '',
+                description: '',
+                priority: 'Medium',
+                due_date: '',
+                status: '',
+                progress: 0,
+                assigned: []
+            };
+        }
+        
+        // Populate the form
+        populateModalEditForm(currentModalTaskData);
+        
+        // Show task info
+        displayModalTaskInfo(currentModalTaskData);
+        
+        // Show the edit form
+        document.getElementById('taskEditModalForm').classList.add('active');
+        document.getElementById('taskInfoDisplay').classList.add('active');
+        
+        showToast('Task loaded successfully!', 'success');
+    } catch (error) {
+        console.error('Error loading task:', error);
+        showToast('Failed to load task data', 'error');
     }
 }
 
-/* Utility Classes */
-.text-center {
-    text-align: center;
+// Display task info in modal
+function displayModalTaskInfo(taskData) {
+    const infoGrid = document.getElementById('taskInfoGrid');
+    infoGrid.innerHTML = `
+        <div class="info-item">
+            <span class="info-label">Master Board ID</span>
+            <span class="info-value">${taskData.master_board_id || 'N/A'}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Company Board ID</span>
+            <span class="info-value">${taskData.company_board_id || 'N/A'}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Company</span>
+            <span class="info-value">${taskData.company || 'Not Set'}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Current Status</span>
+            <span class="info-value">${taskData.status || 'Not Set'}</span>
+        </div>
+    `;
 }
 
-.mt-1 { margin-top: 0.5rem; }
-.mt-2 { margin-top: 1rem; }
-.mt-3 { margin-top: 1.5rem; }
-.mb-1 { margin-bottom: 0.5rem; }
-.mb-2 { margin-bottom: 1rem; }
-.mb-3 { margin-bottom: 1.5rem; }
+// Populate modal edit form
+function populateModalEditForm(taskData) {
+    document.getElementById('editCompany').value = taskData.company || '';
+    document.getElementById('editModalTaskName').value = taskData.task_name || '';
+    document.getElementById('editModalDescription').value = taskData.description || '';
+    document.getElementById('editPriority').value = taskData.priority || 'Medium';
+    document.getElementById('editModalDueDate').value = taskData.due_date || '';
+    document.getElementById('editModalStatus').value = taskData.status || '';
+    document.getElementById('editModalProgress').value = taskData.progress || 0;
+    
+    // Update progress preview
+    updateModalProgressPreview(taskData.progress || 0);
+    
+    // Set assigned users
+    const assignedSelect = document.getElementById('editModalAssigned');
+    Array.from(assignedSelect.options).forEach(option => {
+        option.selected = taskData.assigned?.includes(option.value);
+    });
+    
+    // Set update option based on whether both IDs are present
+    document.getElementById('updateBothBoards').checked = 
+        !!(taskData.master_board_id && taskData.company_board_id);
+}
 
-/* Responsive Design for Progress Elements */
-@media (max-width: 768px) {
-    .progress-hints {
-        font-size: 0.625rem;
+// Update modal progress preview
+function updateModalProgressPreview(value) {
+    const progressBar = document.getElementById('modalProgressBar');
+    const progressValue = document.getElementById('modalProgressValue');
+    const autoStatus = document.getElementById('modalAutoStatus');
+    
+    progressBar.style.width = `${value}%`;
+    progressValue.textContent = `${value}%`;
+    
+    // Update auto status indicator
+    let status = 'Project';
+    let statusClass = 'status-project';
+    
+    if (value >= 10 && value < 100) {
+        status = 'Current Project';
+        statusClass = 'status-current';
+    } else if (value >= 100) {
+        status = 'Project Finished';
+        statusClass = 'status-finished';
     }
     
-    .task-card {
-        padding: 1rem;
+    autoStatus.textContent = status;
+    autoStatus.className = `status-indicator ${statusClass}`;
+}
+
+// Quick complete modal task
+async function quickCompleteModalTask() {
+    if (!currentModalTaskData) {
+        showToast('Please load a task first', 'warning');
+        return;
     }
     
-    .task-actions {
-        flex-direction: column;
+    if (!confirm('Are you sure you want to mark this task as complete?')) {
+        return;
     }
     
-    .task-actions .btn {
-        width: 100%;
+    // Set progress to 100 and update
+    document.getElementById('editModalProgress').value = 100;
+    updateModalProgressPreview(100);
+    
+    // Submit the form
+    await handleModalTaskUpdate({ preventDefault: () => {} });
+}
+
+// Reset modal task editor
+function resetModalTaskEditor() {
+    if (document.getElementById('taskEditModalForm')) {
+        document.getElementById('taskEditModalForm').reset();
+        document.getElementById('taskEditModalForm').classList.remove('active');
+    }
+    if (document.getElementById('taskInfoDisplay')) {
+        document.getElementById('taskInfoDisplay').classList.remove('active');
+    }
+    document.getElementById('masterBoardId').value = '';
+    document.getElementById('companyBoardId').value = '';
+    currentModalTaskData = null;
+    updateModalProgressPreview(0);
+}
+
+// Handle modal task update
+async function handleModalTaskUpdate(event) {
+    event.preventDefault();
+    
+    if (!currentModalTaskData) {
+        showToast('No task loaded', 'error');
+        return;
     }
     
-    .modal-content {
-        margin: 10% auto;
-        width: 95%;
+    // Get selected assigned users
+    const assignedSelect = document.getElementById('editModalAssigned');
+    const assignedTo = Array.from(assignedSelect.selectedOptions).map(option => option.value);
+    
+    const updateData = {
+        action: 'update_details',
+        master_task_id: currentModalTaskData.master_board_id,
+        task_id: currentModalTaskData.company_board_id || currentModalTaskData.master_board_id,
+        company: document.getElementById('editCompany').value,
+        task_name: document.getElementById('editModalTaskName').value,
+        description: document.getElementById('editModalDescription').value,
+        priority: document.getElementById('editPriority').value,
+        due_date: document.getElementById('editModalDueDate').value,
+        assigned_to: assignedTo,
+        progress: parseInt(document.getElementById('editModalProgress').value),
+        status: document.getElementById('editModalStatus').value || null,
+        update_master: document.getElementById('updateBothBoards').checked,
+        employee: currentEmployee || 'Unknown',
+        timestamp: new Date().toISOString()
+    };
+    
+    try {
+        showToast('Updating task...', 'info');
+        
+        const response = await fetch('/api/task-update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateData)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('Task updated successfully!', 'success');
+            
+            // Update current task data
+            currentModalTaskData = {
+                ...currentModalTaskData,
+                ...updateData
+            };
+            
+            // Update task info display
+            displayModalTaskInfo(currentModalTaskData);
+            
+            // Refresh assigned tasks if visible
+            if (currentEmployee) {
+                loadAssignedTasks();
+            }
+        } else {
+            showToast(data.error || 'Failed to update task', 'error');
+        }
+    } catch (error) {
+        console.error('Error updating task:', error);
+        showToast('Error updating task', 'error');
     }
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('taskEditorModal');
+    if (event.target === modal) {
+        closeTaskEditorModal();
+    }
+});
+
+// Add CSS for task editor modal if not already present
+if (!document.getElementById('taskEditorModalStyles')) {
+    const modalStyles = document.createElement('style');
+    modalStyles.id = 'taskEditorModalStyles';
+    modalStyles.innerHTML = `
+        .modal-large {
+            width: 90%;
+            max-width: 900px;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .id-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            border: 2px dashed var(--border-color);
+        }
+        
+        .id-input-group h3 {
+            grid-column: 1 / -1;
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .paste-area {
+            position: relative;
+        }
+        
+        .paste-input {
+            width: 100%;
+            padding: 0.75rem 3.5rem 0.75rem 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.8125rem;
+            background: var(--bg-primary);
+            transition: all var(--transition-fast);
+        }
+        
+        .paste-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .paste-label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .load-task-btn {
+            grid-column: 1 / -1;
+            margin-top: 1rem;
+        }
+        
+        .quick-paste-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+        
+        .quick-paste-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .task-edit-form {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--border-color);
+        }
+        
+        .task-edit-form.active {
+            display: block;
+        }
+        
+        .edit-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .edit-grid .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .progress-editor {
+            margin-top: 1rem;
+        }
+        
+        .progress-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-preview .progress-bar-container {
+            flex: 1;
+        }
+        
+        .assigned-select {
+            height: 120px;
+            padding: 0.5rem;
+        }
+        
+        .assigned-select option {
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .assigned-select option:checked {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .task-info-display {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        
+        .task-info-display.active {
+            display: block;
+        }
+        
+        .task-info-display h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+        
+        .info-value {
+            color: var(--text-primary);
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.8125rem;
+            word-break: break-all;
+        }
+        
+        #taskEditModalForm .modal-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            background: transparent;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-large {
+                width: 95%;
+            }
+            
+            .id-input-group {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .edit-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .edit-grid .full-width {
+                grid-column: 1;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .paste-input {
+                font-size: 0.75rem;
+            }
+            
+            #taskEditModalForm .modal-footer {
+                flex-direction: column;
+            }
+            
+            #taskEditModalForm .modal-footer .btn {
+                width: 100%;
+            }
+        }
+    `;
+    document.head.appendChild(modalStyles);
 }
