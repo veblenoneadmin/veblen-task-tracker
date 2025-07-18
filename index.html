@@ -10,14 +10,7 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1>
-                <img
-                  src="https://i.ibb.co/50CN8P5/fe71a9da-24a6-46cf-8eda-df73bff35fc8.png"
-                  alt="VEBLEN"
-                  class="logo"
-                >
-                Task & Time Tracker
-            </h1>
+        <h1><img src="https://i.ibb.co/50CN8P5/fe71a9da-24a6-46cf-8eda-df73bff35fc8.png" alt="VEBLEN" class="logo"> Task & Time Tracker</h1>
             <div class="employee-selector">
                 <label for="employeeSelect">Employee:</label>
                 <select id="employeeSelect">
@@ -54,8 +47,6 @@
                     <button id="pauseTaskBtn" class="btn btn-warning">⏸️ Pause Task</button>
                     <button id="completeTaskBtn" class="btn btn-success">✅ Complete Task</button>
                 </div>
-                <!-- 📊 LIVE PROGRESS BAR -->
-                <progress id="taskProgressBar" max="100" value="0" style="width: 100%; margin-top: 0.5rem;"></progress>
             </div>
 
             <!-- Start New Task Form -->
@@ -103,8 +94,7 @@
                     <div class="form-group">
                         <label for="taskImage">Attach Image (Optional):</label>
                         <input type="file" id="taskImage" accept="image/*">
-                        <!-- NEW: image preview container -->
-                        <div id="imagePreview"></div>
+                    <div id="imagePreview"></div>
                     </div>
                     
                     <button type="submit" class="btn btn-primary">🚀 Start Task</button>
@@ -114,7 +104,9 @@
 
         <!-- Assigned Tasks Section -->
         <section class="assigned-tasks-section">
-            <h2>📋 Assigned Tasks</h2>
+            <h2>📋 Assigned Tasks
+                <button id="openTaskEditorBtn" class="btn btn-primary btn-sm" style="margin-left: 1rem;" onclick="openTaskEditorModal()">✏️ Edit Task by ID</button>
+            </h2>
             <button id="refreshTasksBtn" class="btn btn-secondary">🔄 Refresh Tasks</button>
             <div id="assignedTasksList" class="assigned-tasks-list">
                 <p class="loading">Select an employee to view assigned tasks...</p>
@@ -134,74 +126,74 @@
         </section>
 
         <!-- Daily Report Section -->
-        <section class="daily-report-section">
-            <h2>📊 Daily Report</h2>
-            <form id="dailyReportForm">
-                <!-- Photo Upload -->
-                <div class="form-group">
-                    <label for="reportPhoto">Photo for Report*</label>
-                    <input type="file" id="reportPhoto" accept=".jpg, .jpeg, .png, .gif" required>
-                    <div id="reportPhotoPreview"></div>
-                </div>
-                
-                <!-- Company Selection -->
-                <div class="form-group">
-                    <label for="reportCompany">Company*</label>
-                    <select id="reportCompany" required>
-                        <option value="">Select Company</option>
-                        <option value="VEBLEN (Internal)">VEBLEN (Internal)</option>
-                        <option value="LCMB GROUP">LCMB GROUP</option>
-                        <option value="NEWTECH TRAILERS">NEWTECH TRAILERS</option>
-                        <option value="CROWN REALITY">CROWN REALITY</option>
-                        <option value="FLECK GROUP">FLECK GROUP</option>
-                    </select>
-                </div>
-                
-                <!-- Date -->
-                <div class="form-group">
-                    <label for="reportDate">Date*</label>
-                    <input type="date" id="reportDate" required>
-                </div>
-                
-                <!-- Project Name -->
-                <div class="form-group">
-                    <label for="projectName">Project Name*</label>
-                    <input type="text" id="projectName" placeholder="Enter the project name" required>
-                </div>
-                
-                <!-- Number of Revisions -->
-                <div class="form-group">
-                    <label for="numRevisions">Number of Revisions*</label>
-                    <input type="number" id="numRevisions" placeholder="Number of Revisions" min="0" required>
-                </div>
-                
-                <!-- Total Time Spent -->
-                <div class="form-group">
-                    <label for="totalTimeSpent">Total Time Spent on Project*</label>
-                    <input type="text" id="totalTimeSpent" placeholder="e.g., 3 hours" required>
-                </div>
-                
-                <!-- Notes -->
-                <div class="form-group">
-                    <label for="reportNotes">Notes*</label>
-                    <textarea id="reportNotes" rows="4" placeholder="Notes" required></textarea>
-                </div>
-                
-                <!-- Links -->
-                <div class="form-group">
-                    <label for="reportLinks">Links</label>
-                    <textarea id="reportLinks" rows="3" placeholder="Add any relevant links (one per line)"></textarea>
-                </div>
-                
-                <!-- Feedback or Requests -->
-                <div class="form-group">
-                    <label for="feedbackRequests">Feedback or Requests</label>
-                    <textarea id="feedbackRequests" rows="5" placeholder="Any feedback, requests, or suggestions?"></textarea>
-                </div>
-                
-                <button type="submit" class="btn btn-primary">📤 Submit Report</button>
-            </form>
-        </section>
+<section class="daily-report-section">
+    <h2>📊 Daily Report</h2>
+    <form id="dailyReportForm">
+        <!-- Photo Upload -->
+        <div class="form-group">
+            <label for="reportPhoto">Photo for Report*</label>
+            <input type="file" id="reportPhoto" accept=".jpg, .jpeg, .png, .gif" required>
+            <div id="reportPhotoPreview"></div>
+        </div>
+        
+        <!-- Company Selection -->
+        <div class="form-group">
+            <label for="reportCompany">Company*</label>
+            <select id="reportCompany" required>
+                <option value="">Select Company</option>
+                <option value="VEBLEN (Internal)">VEBLEN (Internal)</option>
+                <option value="LCMB GROUP">LCMB GROUP</option>
+                <option value="NEWTECH TRAILERS">NEWTECH TRAILERS</option>
+                <option value="CROWN REALITY">CROWN REALITY</option>
+                <option value="FLECK GROUP">FLECK GROUP</option>
+            </select>
+        </div>
+        
+        <!-- Date -->
+        <div class="form-group">
+            <label for="reportDate">Date*</label>
+            <input type="date" id="reportDate" required>
+        </div>
+        
+        <!-- Project Name -->
+        <div class="form-group">
+            <label for="projectName">Project Name*</label>
+            <input type="text" id="projectName" placeholder="Enter the project name" required>
+        </div>
+        
+        <!-- Number of Revisions -->
+        <div class="form-group">
+            <label for="numRevisions">Number of Revisions*</label>
+            <input type="number" id="numRevisions" placeholder="Number of Revisions" min="0" required>
+        </div>
+        
+        <!-- Total Time Spent -->
+        <div class="form-group">
+            <label for="totalTimeSpent">Total Time Spent on Project*</label>
+            <input type="text" id="totalTimeSpent" placeholder="e.g., 3 hours" required>
+        </div>
+        
+        <!-- Notes -->
+        <div class="form-group">
+            <label for="reportNotes">Notes*</label>
+            <textarea id="reportNotes" rows="4" placeholder="Notes" required></textarea>
+        </div>
+        
+        <!-- Links -->
+        <div class="form-group">
+            <label for="reportLinks">Links</label>
+            <textarea id="reportLinks" rows="3" placeholder="Add any relevant links (one per line)"></textarea>
+        </div>
+        
+        <!-- Feedback or Requests -->
+        <div class="form-group">
+            <label for="feedbackRequests">Feedback or Requests</label>
+            <textarea id="feedbackRequests" rows="5" placeholder="Any feedback, requests, or suggestions? e.g.:&#10;&#10;• Can we use a simpler tool instead of X?&#10;• I'm having trouble with Y software&#10;• Can we add Z feature to our workflow?&#10;• The current process for A is confusing&#10;&#10;(Leave blank if no feedback)"></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">📤 Submit Report</button>
+    </form>
+</section>
 
         <!-- Today's Summary Section -->
         <section class="summary-section">
@@ -243,18 +235,19 @@
     
     <!-- Error Handling and Health Check -->
     <script>
-        // Global error catcher
+        // Add error boundary
         window.addEventListener('error', function(e) {
             console.error('Global error:', e.error);
+            // Show user-friendly error message
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.textContent = 'Connection error. Please refresh the page.';
-            errorDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ff4444; color: #fff; padding: 10px 20px; border-radius: 5px; z-index: 9999;';
+            errorDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ff4444; color: white; padding: 10px 20px; border-radius: 5px; z-index: 9999;';
             document.body.appendChild(errorDiv);
             setTimeout(() => errorDiv.remove(), 5000);
         });
 
-        // Health check
+        // Check API health on load
         fetch('/api/health')
             .then(res => res.json())
             .then(data => console.log('API Health:', data))
