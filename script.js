@@ -1,7 +1,6 @@
 // Configuration
 const CONFIG = {
     n8nWebhookUrl: '/api/task-action',
-    sheetsApiUrl: '/api/sheets',
     imgbbApiKey: '679bd601ac49c50cae877fb240620cfe' // Replace with your actual ImgBB API key
 };
 
