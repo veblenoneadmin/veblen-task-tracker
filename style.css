@@ -1,305 +1,931 @@
-// Initialize task editor modal variables
-let currentModalTaskData = null;
+/* VEBLEN Task & Time Tracker - Complete CSS Stylesheet */
 
-// Open task editor modal
-function openTaskEditorModal() {
-    // Create modal if it doesn't exist
-    if (!document.getElementById('taskEditorModal')) {
-        createTaskEditorModal();
-        // Add event listener to the form
-        document.getElementById('taskEditModalForm').addEventListener('submit', handleModalTaskUpdate);
-    }
-    
-    // Show modal
-    document.getElementById('taskEditorModal').style.display = 'block';
+/* ============================================
+   CSS RESET & BASE STYLES
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-// Close task editor modal
-function closeTaskEditorModal() {
-    const modal = document.getElementById('taskEditorModal');
-    if (modal) {
-        modal.style.display = 'none';
-        // Reset form
-        resetModalTaskEditor();
+:root {
+    /* Brand Colors */
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #3b82f6;
+    --secondary-color: #10b981;
+    --secondary-dark: #059669;
+    
+    /* Status Colors */
+    --status-project: #6b7280;
+    --status-priority: #dc2626;
+    --status-current: #3b82f6;
+    --status-revision: #f59e0b;
+    --status-waiting: #8b5cf6;
+    --status-finished: #10b981;
+    --status-rejected: #ef4444;
+    
+    /* UI Colors */
+    --background: #f9fafb;
+    --surface: #ffffff;
+    --surface-hover: #f3f4f6;
+    --border: #e5e7eb;
+    --border-focus: #3b82f6;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-disabled: #9ca3af;
+    
+    /* Company Colors */
+    --veblen-color: #2563eb;
+    --lcmb-color: #059669;
+    --newtech-color: #dc2626;
+    --crown-color: #7c3aed;
+    --fleck-color: #ea580c;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 200ms ease;
+    --transition-slow: 300ms ease;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background-color: var(--background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   LAYOUT COMPONENTS
+   ============================================ */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+}
+
+/* Header Styles */
+.header {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.user-company {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   FORM ELEMENTS
+   ============================================ */
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.875rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 0.625rem var(--spacing-md);
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background-color: var(--surface);
+    transition: all var(--transition-fast);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input:disabled,
+.form-select:disabled,
+.form-textarea:disabled {
+    background-color: var(--surface-hover);
+    color: var(--text-disabled);
+    cursor: not-allowed;
+}
+
+.form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+    gap: var(--spacing-sm);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-secondary {
+    background-color: var(--surface);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: var(--surface-hover);
+}
+
+.btn-success {
+    background-color: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.btn-success:hover:not(:disabled) {
+    background-color: var(--secondary-dark);
+    border-color: var(--secondary-dark);
+}
+
+.btn-danger {
+    background-color: var(--status-rejected);
+    color: white;
+    border-color: var(--status-rejected);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background-color: #dc2626;
+    border-color: #dc2626;
+}
+
+.btn-large {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+.btn-small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.btn-full-width {
+    width: 100%;
+}
+
+.btn-icon {
+    padding: 0.625rem;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-body {
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   TIME TRACKING SECTION
+   ============================================ */
+.time-tracking-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.clock-display {
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    padding: var(--spacing-xl);
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.current-time {
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.work-status {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-top: var(--spacing-sm);
+}
+
+.work-status.active {
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.clock-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+/* ============================================
+   TASK MANAGEMENT SECTION
+   ============================================ */
+.task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.task-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.task-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.task-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: var(--primary-color);
+}
+
+.task-card.priority-high::before {
+    background-color: var(--status-priority);
+}
+
+.task-card.priority-urgent::before {
+    background-color: var(--status-rejected);
+    width: 6px;
+}
+
+.task-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.task-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.3;
+}
+
+.task-company {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+}
+
+.task-company.veblen {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--veblen-color);
+}
+
+.task-company.lcmb {
+    background-color: rgba(5, 150, 105, 0.1);
+    color: var(--lcmb-color);
+}
+
+.task-company.newtech {
+    background-color: rgba(220, 38, 38, 0.1);
+    color: var(--newtech-color);
+}
+
+.task-company.crown {
+    background-color: rgba(124, 58, 237, 0.1);
+    color: var(--crown-color);
+}
+
+.task-company.fleck {
+    background-color: rgba(234, 88, 12, 0.1);
+    color: var(--fleck-color);
+}
+
+.task-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.task-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.task-meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.task-meta-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+}
+
+/* Progress Bar */
+.task-progress {
+    margin-bottom: var(--spacing-md);
+}
+
+.progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.875rem;
+}
+
+.progress-label {
+    color: var(--text-secondary);
+}
+
+.progress-value {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width var(--transition-slow), background-color var(--transition-base);
+    position: relative;
+    background-color: var(--status-project);
+}
+
+.progress-fill[data-progress="0"] {
+    background-color: var(--status-project);
+}
+
+.progress-fill[data-progress^="1"],
+.progress-fill[data-progress^="2"],
+.progress-fill[data-progress^="3"],
+.progress-fill[data-progress^="4"] {
+    background-color: var(--status-revision);
+}
+
+.progress-fill[data-progress^="5"],
+.progress-fill[data-progress^="6"],
+.progress-fill[data-progress^="7"],
+.progress-fill[data-progress^="8"],
+.progress-fill[data-progress^="9"] {
+    background-color: var(--status-current);
+}
+
+.progress-fill[data-progress="100"] {
+    background-color: var(--status-finished);
+}
+
+/* Status Badge */
+.task-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-project {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: var(--status-project);
+}
+
+.status-priority {
+    background-color: rgba(220, 38, 38, 0.1);
+    color: var(--status-priority);
+}
+
+.status-current {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--status-current);
+}
+
+.status-revision {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--status-revision);
+}
+
+.status-waiting {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: var(--status-waiting);
+}
+
+.status-finished {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--status-finished);
+}
+
+.status-rejected {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--status-rejected);
+}
+
+/* Task Actions */
+.task-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.task-actions .btn {
+    flex: 1;
+}
+
+/* ============================================
+   MODALS
+   ============================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background-color: var(--surface);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform var(--transition-base);
+}
+
+.modal-overlay.active .modal {
+    transform: scale(1);
+}
+
+.modal-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--text-secondary);
+}
+
+.modal-close:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: var(--spacing-lg);
+    max-height: calc(90vh - 140px);
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+}
+
+/* ============================================
+   DASHBOARD COMPONENTS
+   ============================================ */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.stat-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.stat-change {
+    font-size: 0.75rem;
+    margin-top: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.stat-change.positive {
+    color: var(--secondary-color);
+}
+
+.stat-change.negative {
+    color: var(--status-rejected);
+}
+
+/* ============================================
+   DAILY REPORT FORM
+   ============================================ */
+.report-form {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.file-upload {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    border: 2px dashed var(--border);
+    border-radius: 0.5rem;
+    background-color: var(--surface-hover);
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.file-upload:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.file-upload.has-file {
+    border-color: var(--secondary-color);
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+.file-upload-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.file-upload-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-secondary);
+}
+
+.file-upload-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.file-upload-filename {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-top: var(--spacing-sm);
+}
+
+/* ============================================
+   TASK EDITOR MODAL
+   ============================================ */
+.task-id-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.progress-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border);
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+.progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.progress-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.progress-slider:hover::-webkit-slider-thumb {
+    transform: scale(1.1);
+}
+
+.progress-slider:hover::-moz-range-thumb {
+    transform: scale(1.1);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-sm);
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .task-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .clock-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .task-actions {
+        flex-direction: column;
+    }
+    
+    .task-actions .btn {
+        width: 100%;
     }
 }
 
-// Paste from clipboard
-async function pasteFromClipboard(inputId) {
-    try {
-        const text = await navigator.clipboard.readText();
-        // Extract UUID pattern from pasted text
-        const uuidPattern = /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i;
-        const match = text.match(uuidPattern);
-        
-        if (match) {
-            document.getElementById(inputId).value = match[0];
-            showToast('ID pasted successfully!', 'success');
-        } else {
-            showToast('No valid ID found in clipboard', 'warning');
-        }
-    } catch (err) {
-        showToast('Failed to read clipboard', 'error');
-    }
+/* ============================================
+   LOADING STATES
+   ============================================ */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 0.8s linear infinite;
 }
 
-// Load task for editing
-async function loadTaskForEdit() {
-    const masterBoardId = document.getElementById('masterBoardId').value.trim();
-    const companyBoardId = document.getElementById('companyBoardId').value.trim();
-    
-    if (!masterBoardId && !companyBoardId) {
-        showToast('Please enter at least one Task ID', 'warning');
-        return;
-    }
-    
-    // Show loading state
-    showToast('Loading task data...', 'info');
-    
-    try {
-        // Call API to get task data
-        // For now, we'll use the loaded tasks data if available
-        let taskData = null;
-        
-        // Try to find task in loaded tasks
-        if (window.loadedTasks && window.loadedTasks.length > 0) {
-            taskData = window.loadedTasks.find(task => 
-                task.intake_task_id === companyBoardId || 
-                task.master_task_id === masterBoardId
-            );
-        }
-        
-        if (!taskData) {
-            // Make API call to fetch task data
-            const response = await fetch(`/api/task/${companyBoardId || masterBoardId}?company=${currentEmployee}`);
-            if (response.ok) {
-                const result = await response.json();
-                taskData = result.data;
-            }
-        }
-        
-        if (taskData) {
-            currentModalTaskData = {
-                master_board_id: masterBoardId,
-                company_board_id: companyBoardId,
-                company: taskData.company || 'VEBLEN (Internal)',
-                task_name: taskData.task_name || taskData.title || '',
-                description: taskData.description || '',
-                priority: taskData.priority || 'Medium',
-                due_date: taskData.due_date || '',
-                status: taskData.current_status || taskData.status || '',
-                progress: taskData.progress || 0,
-                assigned: taskData.assigned || []
-            };
-        } else {
-            // Create empty task data structure
-            currentModalTaskData = {
-                master_board_id: masterBoardId,
-                company_board_id: companyBoardId,
-                company: '',
-                task_name: '',
-                description: '',
-                priority: 'Medium',
-                due_date: '',
-                status: '',
-                progress: 0,
-                assigned: []
-            };
-        }
-        
-        // Populate the form
-        populateModalEditForm(currentModalTaskData);
-        
-        // Show task info
-        displayModalTaskInfo(currentModalTaskData);
-        
-        // Show the edit form
-        document.getElementById('taskEditModalForm').classList.add('active');
-        document.getElementById('taskInfoDisplay').classList.add('active');
-        
-        showToast('Task loaded successfully!', 'success');
-    } catch (error) {
-        console.error('Error loading task:', error);
-        showToast('Failed to load task data', 'error');
-    }
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
-// Display task info in modal
-function displayModalTaskInfo(taskData) {
-    const infoGrid = document.getElementById('taskInfoGrid');
-    infoGrid.innerHTML = `
-        <div class="info-item">
-            <span class="info-label">Master Board ID</span>
-            <span class="info-value">${taskData.master_board_id || 'N/A'}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Company Board ID</span>
-            <span class="info-value">${taskData.company_board_id || 'N/A'}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Company</span>
-            <span class="info-value">${taskData.company || 'Not Set'}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Current Status</span>
-            <span class="info-value">${taskData.status || 'Not Set'}</span>
-        </div>
-    `;
+.skeleton {
+    background: linear-gradient(90deg, var(--border) 25%, var(--surface-hover) 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
 }
 
-// Populate modal edit form
-function populateModalEditForm(taskData) {
-    document.getElementById('editCompany').value = taskData.company || '';
-    document.getElementById('editModalTaskName').value = taskData.task_name || '';
-    document.getElementById('editModalDescription').value = taskData.description || '';
-    document.getElementById('editPriority').value = taskData.priority || 'Medium';
-    document.getElementById('editModalDueDate').value = taskData.due_date || '';
-    document.getElementById('editModalStatus').value = taskData.status || '';
-    document.getElementById('editModalProgress').value = taskData.progress || 0;
-    
-    // Update progress preview
-    updateModalProgressPreview(taskData.progress || 0);
-    
-    // Set assigned users
-    const assignedSelect = document.getElementById('editModalAssigned');
-    Array.from(assignedSelect.options).forEach(option => {
-        option.selected = taskData.assigned?.includes(option.value);
-    });
-    
-    // Set update option based on whether both IDs are present
-    document.getElementById('updateBothBoards').checked = 
-        !!(taskData.master_board_id && taskData.company_board_id);
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
-// Update modal progress preview
-function updateModalProgressPreview(value) {
-    const progressBar = document.getElementById('modalProgressBar');
-    const progressValue = document.getElementById('modalProgressValue');
-    const autoStatus = document.getElementById('modalAutoStatus');
-    
-    progressBar.style.width = `${value}%`;
-    progressValue.textContent = `${value}%`;
-    
-    // Update auto status indicator
-    let status = 'Project';
-    let statusClass = 'status-project';
-    
-    if (value >= 10 && value < 100) {
-        status = 'Current Project';
-        statusClass = 'status-current';
-    } else if (value >= 100) {
-        status = 'Project Finished';
-        statusClass = 'status-finished';
-    }
-    
-    autoStatus.textContent = status;
-    autoStatus.className = `status-indicator ${statusClass}`;
-}
+/* ============================================
+   UTILITIES
+   ============================================ */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
 
-// Quick complete modal task
-async function quickCompleteModalTask() {
-    if (!currentModalTaskData) {
-        showToast('Please load a task first', 'warning');
-        return;
-    }
-    
-    if (!confirm('Are you sure you want to mark this task as complete?')) {
-        return;
-    }
-    
-    // Set progress to 100 and update
-    document.getElementById('editModalProgress').value = 100;
-    updateModalProgressPreview(100);
-    
-    // Submit the form
-    await handleModalTaskUpdate({ preventDefault: () => {} });
-}
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+.mt-5 { margin-top: var(--spacing-xl); }
 
-// Reset modal task editor
-function resetModalTaskEditor() {
-    if (document.getElementById('taskEditModalForm')) {
-        document.getElementById('taskEditModalForm').reset();
-        document.getElementById('taskEditModalForm').classList.remove('active');
-    }
-    if (document.getElementById('taskInfoDisplay')) {
-        document.getElementById('taskInfoDisplay').classList.remove('active');
-    }
-    document.getElementById('masterBoardId').value = '';
-    document.getElementById('companyBoardId').value = '';
-    currentModalTaskData = null;
-    updateModalProgressPreview(0);
-}
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+.mb-5 { margin-bottom: var(--spacing-xl); }
 
-// Handle modal task update
-async function handleModalTaskUpdate(event) {
-    event.preventDefault();
-    
-    if (!currentModalTaskData) {
-        showToast('No task loaded', 'error');
-        return;
+.hidden { display: none !important; }
+.invisible { visibility: hidden; }
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+    .header,
+    .btn,
+    .modal,
+    .task-actions {
+        display: none !important;
     }
     
-    // Get selected assigned users
-    const assignedSelect = document.getElementById('editModalAssigned');
-    const assignedTo = Array.from(assignedSelect.selectedOptions).map(option => option.value);
+    .task-grid {
+        grid-template-columns: 1fr;
+    }
     
-    const updateData = {
-        action: 'update_details',
-        master_task_id: currentModalTaskData.master_board_id,
-        task_id: currentModalTaskData.company_board_id || currentModalTaskData.master_board_id,
-        company: document.getElementById('editCompany').value,
-        task_name: document.getElementById('editModalTaskName').value,
-        description: document.getElementById('editModalDescription').value,
-        priority: document.getElementById('editPriority').value,
-        due_date: document.getElementById('editModalDueDate').value,
-        assigned_to: assignedTo,
-        progress: parseInt(document.getElementById('editModalProgress').value),
-        status: document.getElementById('editModalStatus').value || null,
-        update_master: document.getElementById('updateBothBoards').checked,
-        employee: currentEmployee || 'Unknown',
-        timestamp: new Date().toISOString()
-    };
-    
-    try {
-        showToast('Updating task...', 'info');
-        
-        const response = await fetch('/api/task-update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updateData)
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-            showToast('Task updated successfully!', 'success');
-            
-            // Update current task data
-            currentModalTaskData = {
-                ...currentModalTaskData,
-                ...updateData
-            };
-            
-            // Update task info display
-            displayModalTaskInfo(currentModalTaskData);
-            
-            // Refresh assigned tasks if visible
-            if (currentEmployee) {
-                loadAssignedTasks();
-            }
-        } else {
-            showToast(data.error || 'Failed to update task', 'error');
-        }
-    } catch (error) {
-        console.error('Error updating task:', error);
-        showToast('Error updating task', 'error');
+    .task-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
     }
 }
-
-// Close modal when clicking outside
-window.addEventListener('click', function(event) {
-    const modal = document.getElementById('taskEditorModal');
-    if (event.target === modal) {
-        closeTaskEditorModal();
-    }
-});
